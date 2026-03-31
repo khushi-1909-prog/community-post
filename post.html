@@ -5,43 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zyntho Community</title>
 <style>
-:root{
-  --bg:#f5f5f5; --card:#fff; --text:#000; --accent:#ff416c;
-}
-body.dark{
-  --bg:#121212; --card:#1e1e1e; --text:#fff;
-}
-body{
-  margin:0; font-family:Arial;
-  background:var(--bg); color:var(--text);
-}
-.header{
-  background:var(--card); padding:15px; text-align:center;
-  font-size:24px; font-weight:bold; border-bottom:1px solid #ddd;
-  position:sticky; top:0;
-}
-.header span{
-  font-family:cursive;
-  background:linear-gradient(45deg,#ff416c,#ff4b2b);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-}
-.toggle{
-  position:absolute; right:15px; top:15px; cursor:pointer;
-}
+:root{ --bg:#f5f5f5; --card:#fff; --text:#000; }
+body.dark{ --bg:#121212; --card:#1e1e1e; --text:#fff; }
+body{ margin:0; font-family:Arial; background:var(--bg); color:var(--text); }
+
+.header{ background:var(--card); padding:15px; text-align:center; font-size:24px; font-weight:bold; border-bottom:1px solid #ddd; position:sticky; top:0; }
+.header span{ font-family:cursive; background:linear-gradient(45deg,#ff416c,#ff4b2b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.toggle{ position:absolute; right:15px; top:15px; cursor:pointer; }
+
 .container{ width:90%; max-width:500px; margin:20px auto; }
-.post-box,.post{
-  background:var(--card); padding:15px; border-radius:12px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:20px;
-}
-textarea{
-  width:100%; height:80px; border:1px solid #ddd;
-  border-radius:8px; padding:10px; resize:none; margin-bottom:10px;
-}
-button{
-  width:100%; padding:10px;
-  background:linear-gradient(45deg,#ff416c,#ff4b2b);
-  color:#fff; border:none; border-radius:8px; cursor:pointer;
-}
+.post-box,.post{ background:var(--card); padding:15px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:20px; }
+
+textarea{ width:100%; height:80px; border:1px solid #ddd; border-radius:8px; padding:10px; resize:none; margin-bottom:10px; }
+
+.small-btn{ width:auto; padding:6px 15px; font-size:14px; }
+
 .post img{ width:100%; border-radius:10px; margin-top:10px; }
 .username{ font-weight:bold; }
 .actions{ display:flex; gap:15px; margin-top:10px; }
@@ -50,14 +28,9 @@ button{
 .comment-box input{ flex:1; padding:5px; }
 .comment{ font-size:14px; margin-top:5px; }
 .preview{ width:100%; margin-top:10px; border-radius:10px; }
-.modal{
-  position:fixed; top:0; left:0; width:100%; height:100%;
-  background:rgba(0,0,0,0.5);
-  display:none; justify-content:center; align-items:center;
-}
-.modal-content{
-  background:white; padding:20px; border-radius:12px; text-align:center;
-}
+
+.modal{ position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; }
+.modal-content{ background:white; padding:20px; border-radius:12px; text-align:center; }
 </style>
 </head>
 <body>
@@ -73,10 +46,47 @@ button{
   <textarea id="captionInput" placeholder="Write something..."></textarea>
   <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
   <img id="preview" class="preview" style="display:none;">
-  <button onclick="createPost()">Post</button>
+  <button class="small-btn" onclick="createPost()">Post</button>
 </div>
 
-<div id="postsContainer"></div>
+<div id="postsContainer">
+
+<!-- Pre-added interactive posts -->
+<div class="post">
+  <div class="username">Khushi</div>
+  <div>Obsessed with this look 😍</div>
+  <img src="https://via.placeholder.com/500">
+  <div class="actions">
+    <span onclick="likePost(this)">❤️ 2</span>
+    <span onclick="toggleComments(this)">💬 Comment</span>
+  </div>
+  <div class="comments">
+    <div class="comment">user1: So pretty!</div>
+  </div>
+  <div class="comment-box" style="display:none">
+    <input type="text" placeholder="Add comment">
+    <button onclick="addComment(this)">Post</button>
+  </div>
+</div>
+
+<div class="post">
+  <div class="username">fashiongirl</div>
+  <div>Summer vibes ☀️</div>
+  <img src="https://via.placeholder.com/500">
+  <div class="actions">
+    <span onclick="likePost(this)">❤️ 5</span>
+    <span onclick="toggleComments(this)">💬 Comment</span>
+  </div>
+  <div class="comments">
+    <div class="comment">user2: Love this!</div>
+  </div>
+  <div class="comment-box" style="display:none">
+    <input type="text" placeholder="Add comment">
+    <button onclick="addComment(this)">Post</button>
+  </div>
+</div>
+
+</div>
 </div>
 
 <div class="modal" id="successModal">
@@ -90,10 +100,7 @@ button{
 function previewImage(){
   const file=document.getElementById('imageInput').files[0];
   const preview=document.getElementById('preview');
-  if(file){
-    preview.src=URL.createObjectURL(file);
-    preview.style.display='block';
-  }
+  if(file){ preview.src=URL.createObjectURL(file); preview.style.display='block'; }
 }
 
 function createPost(){
@@ -116,7 +123,7 @@ function createPost(){
       <span onclick="likePost(this)">❤️ 0</span>
       <span onclick="toggleComments(this)">💬 Comment</span>
     </div>
-    <div class="comments" style="display:none"></div>
+    <div class="comments"></div>
     <div class="comment-box" style="display:none">
       <input type="text" placeholder="Add comment">
       <button onclick="addComment(this)">Post</button>
@@ -159,13 +166,9 @@ function addComment(btn){
   input.value='';
 }
 
-function toggleMode(){
-  document.body.classList.toggle('dark');
-}
+function toggleMode(){ document.body.classList.toggle('dark'); }
 
-function goToNextPage(){
-  window.location.href='nextpage.html';
-}
+function goToNextPage(){ window.location.href='nextpage.html'; }
 </script>
 
 </body>
