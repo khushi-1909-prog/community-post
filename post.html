@@ -152,10 +152,9 @@ function likePost(el){
   }
 
   el.innerText = `❤️ ${count}`;
-}`;
 }
 
-function toggleComments(el){
+  function toggleComments(el){
   const post=el.closest('.post');
   const box=post.querySelector('.comment-box');
   box.style.display = box.style.display==='none' ? 'flex' : 'none';
