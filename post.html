@@ -12,8 +12,9 @@ body{ margin:0; font-family:Arial; background:var(--bg); color:var(--text); }
 .header{ background:var(--card); padding:15px; text-align:center; font-size:24px; font-weight:bold; border-bottom:1px solid #333; position:sticky; top:0; }
 .header span{ font-family:cursive; background:linear-gradient(45deg,#ff416c,#ff4b2b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 .toggle{ position:absolute; right:15px; top:15px; cursor:pointer; }
-.post {
-  color: var(--text);
+.post, 
+.post * {
+  color: var(--text) !important;
 }
 .container{ width:90%; max-width:500px; margin:20px auto; }
 .post-box,.post{ background:var(--card); padding:15px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.2); margin-bottom:20px; }
