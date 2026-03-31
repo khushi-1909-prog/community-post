@@ -20,14 +20,17 @@ textarea{ width:100%; height:80px; border:1px solid #555; border-radius:8px; pad
 
 .small-btn{ width:auto; padding:6px 15px; font-size:14px; }
 
-/* Avatar + header row */
-.user-row{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
-.avatar{ width:40px; height:40px; border-radius:50%; object-fit:cover; }
-.username{ font-weight:bold; }
-
+.username{ font-weight:bold; margin-bottom:5px; }
 .post img{ width:100%; border-radius:10px; margin-top:10px; }
 .actions{ display:flex; gap:15px; margin-top:10px; }
 .actions span{ cursor:pointer; }
+
+/* Comments */
+.comments{ margin-top:10px; }
+.comment{ font-size:14px; margin-top:5px; }
+.comment-box{ display:flex; gap:5px; margin-top:10px; }
+.comment-box input{ flex:1; padding:5px; }
+
 .preview{ width:100%; margin-top:10px; border-radius:10px; }
 
 .modal{ position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; }
@@ -52,28 +55,34 @@ textarea{ width:100%; height:80px; border:1px solid #555; border-radius:8px; pad
 
 <div id="postsContainer">
 
-<!-- Pre-added posts with avatars -->
+<!-- Pre-added posts with comments enabled -->
 <div class="post">
-  <div class="user-row">
-    <img class="avatar" src="https://i.pravatar.cc/100?img=1">
-    <div class="username">@khushi</div>
-  </div>
+  <div class="username">@khushi</div>
   <div>Obsessed with this look 😍</div>
   <img src="https://via.placeholder.com/500">
   <div class="actions">
     <span onclick="likePost(this)">❤️ 2</span>
+    <span onclick="toggleComments(this)">💬 Comment</span>
+  </div>
+  <div class="comments"></div>
+  <div class="comment-box" style="display:none">
+    <input type="text" placeholder="Add comment">
+    <button onclick="addComment(this)">Post</button>
   </div>
 </div>
 
 <div class="post">
-  <div class="user-row">
-    <img class="avatar" src="https://i.pravatar.cc/100?img=5">
-    <div class="username">@fashiongirl</div>
-  </div>
+  <div class="username">@fashiongirl</div>
   <div>Summer vibes ☀️</div>
   <img src="https://via.placeholder.com/500">
   <div class="actions">
     <span onclick="likePost(this)">❤️ 5</span>
+    <span onclick="toggleComments(this)">💬 Comment</span>
+  </div>
+  <div class="comments"></div>
+  <div class="comment-box" style="display:none">
+    <input type="text" placeholder="Add comment">
+    <button onclick="addComment(this)">Post</button>
   </div>
 </div>
 
@@ -107,14 +116,17 @@ function createPost(){
   if(file){ imgHTML=`<img src="${URL.createObjectURL(file)}">`; }
 
   post.innerHTML=`
-    <div class="user-row">
-      <img class="avatar" src="https://i.pravatar.cc/100">
-      <div class="username">@you</div>
-    </div>
+    <div class="username">@you</div>
     <div>${caption}</div>
     ${imgHTML}
     <div class="actions">
       <span onclick="likePost(this)">❤️ 0</span>
+      <span onclick="toggleComments(this)">💬 Comment</span>
+    </div>
+    <div class="comments"></div>
+    <div class="comment-box" style="display:none">
+      <input type="text" placeholder="Add comment">
+      <button onclick="addComment(this)">Post</button>
     </div>
   `;
 
@@ -128,9 +140,38 @@ function createPost(){
 }
 
 function likePost(el){
-  let count=parseInt(el.innerText.split(' ')[1]);
-  count++;
-  el.innerText=`❤️ ${count}`;
+  let parts = el.innerText.split(' ');
+  let count = parseInt(parts[1]);
+
+  if(el.classList.contains('liked')){
+    count--;
+    el.classList.remove('liked');
+  } else {
+    count++;
+    el.classList.add('liked');
+  }
+
+  el.innerText = `❤️ ${count}`;
+}`;
+}
+
+function toggleComments(el){
+  const post=el.closest('.post');
+  const box=post.querySelector('.comment-box');
+  box.style.display = box.style.display==='none' ? 'flex' : 'none';
+}
+
+function addComment(btn){
+  const input=btn.previousElementSibling;
+  const text=input.value;
+  if(!text) return;
+
+  const comment=document.createElement('div');
+  comment.className='comment';
+  comment.innerText='@you: '+text;
+
+  btn.parentElement.previousElementSibling.appendChild(comment);
+  input.value='';
 }
 
 function toggleMode(){ document.body.classList.toggle('light'); }
