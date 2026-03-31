@@ -35,6 +35,11 @@ textarea{ width:100%; height:80px; border:1px solid #555; border-radius:8px; pad
 
 .modal{ position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; }
 .modal-content{ background:white; padding:20px; border-radius:12px; text-align:center; }
+.caption {
+  color: var(--text);
+  margin-top: 5px;
+  font-size: 15px;
+}
 </style>
 </head>
 <body>
@@ -117,7 +122,7 @@ function createPost(){
 
   post.innerHTML=`
     <div class="username">@you</div>
-    <div>${caption}</div>
+    <div class="caption">${caption}</div>
     ${imgHTML}
     <div class="actions">
       <span onclick="likePost(this)">❤️ 0</span>
