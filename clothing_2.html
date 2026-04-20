@@ -134,15 +134,41 @@
 .btn.small {
   line-height: 1.2;
 }
+.btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* MAIN FIX */
+.equal-btn {
+  width: 170px;          /* Increased for full text */
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  border-radius: 10px;
+  background: linear-gradient(45deg, #6a5cff, #5b4bff);
+  color: white;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Fix anchor behaving like button */
+a.equal-btn {
+  display: flex;
+}
 @media (max-width: 480px) {
   .btn-group {
     gap: 5px;
   }
 
-  .btn.small {
+ /* .btn.small {
     padding: 5px 8px;
     font-size: 11px;
-  }
+  }*/
 }
 .action-buttons {
   display: flex;
@@ -269,19 +295,16 @@
  
   
     
-  <div class="btn-group top-center">
-    <button onclick="showSection('clothing')" class="btn small" id="btn-clothing">Bags</button>
-    <a href="post.html" class="btn-with-badge">
-    <button class="btn small">✨ Community Post</button>
+ <div class="btn-group top-center">
+  <button onclick="showSection('clothing')" class="btn equal-btn">Bags</button>
+
+  <a href="post.html" class="btn equal-btn btn-with-badge">
+    Community Post
     <span class="badge">NEW</span>
-    </a>
-     
-    
-
-
-    
-  </div>
-   <div class="divider">
+  </a>
+</div>
+   
+  <div class="divider">
       <div class="divider-line"></div>
       <div class="divider-text">Free Shipping above orders $ 10</div>
       <div class="divider-line"></div>
