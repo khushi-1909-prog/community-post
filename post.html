@@ -52,6 +52,36 @@
     .continue-btn:hover {
       background: #1e7e34;
     }
+    .actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.actions span {
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.comments {
+  margin-top: 10px;
+}
+
+.comment {
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.comment-box {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.comment-box input {
+  flex: 1;
+  padding: 5px;
+}
   </style>
 </head>
 <body>
@@ -67,17 +97,40 @@
 
     <div id="postsContainer">
       <div class="post">
-        <div class="username">khushi</div>
-        <div class="caption">Loving this new outfit! 😍</div>
-        <img src="https://via.placeholder.com/500">
-      </div>
+      
+  <div class="username">khushi</div>
+  <div class="caption">Loving this new outfit! 😍</div>
+  <img src="https://via.placeholder.com/500">
 
+  <div class="actions">
+    <span onclick="likePost(this)">❤️ 0</span>
+    <span onclick="toggleComments(this)">💬 Comment</span>
+  </div>
+
+  <div class="comments"></div>
+
+  <div class="comment-box" style="display:none;">
+    <input type="text" placeholder="Add comment">
+    <button onclick="addComment(this)">Post</button>
+  </div>
+</div>
       <div class="post">
-        <div class="username">fashiongirl</div>
-        <div class="caption">Tried a new styling look today ✨</div>
-        <img src="https://via.placeholder.com/500">
-      </div>
-    </div>
+  <div class="username">ABCD</div>
+  <div class="caption">Loving this new outfit! 😍</div>
+  <img src="https://via.placeholder.com/500">
+
+  <div class="actions">
+    <span onclick="likePost(this)">❤️ 0</span>
+    <span onclick="toggleComments(this)">💬 Comment</span>
+  </div>
+
+  <div class="comments"></div>
+
+  <div class="comment-box" style="display:none;">
+    <input type="text" placeholder="Add comment">
+    <button onclick="addComment(this)">Post</button>
+  </div>
+</div>
   </div>
 
   <!-- Success Popup -->
@@ -90,45 +143,147 @@
   </div>
 
   <script>
-    function createPost() {
-      const caption = document.getElementById("captionInput").value.trim();
-      const imageInput = document.getElementById("imageInput");
-      const file = imageInput.files[0];
+   function createPost() {
+  const caption = document.getElementById("captionInput").value.trim();
+  const file = document.getElementById("imageInput").files[0];
 
-      if (!caption && !file) {
-        alert("Please add a caption or image!");
-        return;
-      }
+  if (!caption && !file) {
+    alert("Please add a caption or image!");
+    return;
+  }
 
-      const postDiv = document.createElement("div");
-      postDiv.className = "post";
+  if (file) {
+    const reader = new FileReader();
 
-      let imageHTML = "";
+    reader.onload = function (e) {
+      savePost(caption, e.target.result);
+    };
 
-      if (file) {
-        const imageURL = URL.createObjectURL(file);
-        imageHTML = `<img src="${imageURL}">`;
-      }
+    reader.readAsDataURL(file); // convert image to base64
+  } else {
+    savePost(caption, null);
+  }
 
-      postDiv.innerHTML = `
-        <div class="username">@you</div>
-        <div class="caption">${caption}</div>
-        ${imageHTML}
-      `;
-
-      const container = document.getElementById("postsContainer");
-      container.prepend(postDiv);
-
-      document.getElementById("captionInput").value = "";
-      imageInput.value = "";
-
-      // Show success popup
-      document.getElementById("successModal").style.display = "flex";
-    }
-
+  document.getElementById("captionInput").value = "";
+  document.getElementById("imageInput").value = "";
+}
     function goToNextPage() {
       window.location.href = "nextpage.html"; // change this to your actual page
     }
+    function likePost(el) {
+  let parts = el.innerText.split(' ');
+  let count = parseInt(parts[1]);
+
+  if (el.classList.contains('liked')) {
+    count--;
+    el.classList.remove('liked');
+  } else {
+    count++;
+    el.classList.add('liked');
+  }
+
+  el.innerText = `❤️ ${count}`;
+}
+
+function toggleComments(el) {
+  const post = el.closest('.post');
+  const box = post.querySelector('.comment-box');
+
+  box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+}
+
+function addComment(btn) {
+  const input = btn.previousElementSibling;
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  const comment = document.createElement('div');
+  comment.className = 'comment';
+  comment.innerText = '@you: ' + text;
+
+  btn.parentElement.previousElementSibling.appendChild(comment);
+
+  input.value = '';
+}
+function savePost(caption, image) {
+  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+  posts.unshift({
+    username: "@you",
+    caption: caption,
+    image: image,
+    likes: 0,
+    comments: []
+  });
+
+  localStorage.setItem("posts", JSON.stringify(posts));
+
+  loadPosts();
+}
+window.onload = function () {
+  loadPosts();
+};
+function loadPosts() {
+  const container = document.getElementById("postsContainer");
+  container.innerHTML = "";
+
+  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+  posts.forEach((postData, index) => {
+    const post = document.createElement("div");
+    post.className = "post";
+
+    let imageHTML = postData.image ? `<img src="${postData.image}">` : "";
+
+    let commentsHTML = postData.comments
+      .map(c => `<div class="comment">${c}</div>`)
+      .join("");
+
+    post.innerHTML = `
+      <div class="username">${postData.username}</div>
+      <div class="caption">${postData.caption}</div>
+      ${imageHTML}
+
+      <div class="actions">
+        <span onclick="likePostStorage(${index}, this)">❤️ ${postData.likes}</span>
+        <span onclick="toggleComments(this)">💬 Comment</span>
+      </div>
+
+      <div class="comments">${commentsHTML}</div>
+
+      <div class="comment-box" style="display:none;">
+        <input type="text" placeholder="Add comment">
+        <button onclick="addCommentStorage(${index}, this)">Post</button>
+      </div>
+    `;
+
+    container.appendChild(post);
+  });
+}
+function likePostStorage(index, el) {
+  let posts = JSON.parse(localStorage.getItem("posts"));
+
+  posts[index].likes++;
+
+  localStorage.setItem("posts", JSON.stringify(posts));
+
+  loadPosts();
+}
+function addCommentStorage(index, btn) {
+  const input = btn.previousElementSibling;
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  let posts = JSON.parse(localStorage.getItem("posts"));
+
+  posts[index].comments.push("@you: " + text);
+
+  localStorage.setItem("posts", JSON.stringify(posts));
+
+  loadPosts();
+}
   </script>
 
 </body>
