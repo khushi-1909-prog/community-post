@@ -125,50 +125,23 @@
 
 /* SMALL BUTTON STYLE */
 .btn.small {
-  width: 150px;
-  height: 40px;        /* same height */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 6px 10px;        /* smaller height & width */
+  font-size: 12px;
+  border-radius: 8px;
+  white-space: nowrap;      /* keeps text in one line */
 }
 .btn.small {
   line-height: 1.2;
-}
-.btn-group {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-/* MAIN FIX */
-.equal-btn {
-  width: 170px;          /* Increased for full text */
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  border-radius: 10px;
-  background: linear-gradient(45deg, #6a5cff, #5b4bff);
-  color: white;
-  border: none;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-/* Fix anchor behaving like button */
-a.equal-btn {
-  display: flex;
 }
 @media (max-width: 480px) {
   .btn-group {
     gap: 5px;
   }
 
- /* .btn.small {
+  .btn.small {
     padding: 5px 8px;
     font-size: 11px;
-  }*/
+  }
 }
 .action-buttons {
   display: flex;
@@ -295,16 +268,19 @@ a.equal-btn {
  
   
     
- <div class="btn-group top-center">
-  <button onclick="showSection('clothing')" class="btn equal-btn">Bags</button>
-
-  <a href="post.html" class="btn equal-btn btn-with-badge">
-    Community Post
+  <div class="btn-group top-center">
+    <button onclick="showSection('clothing')" class="btn small" id="btn-clothing">Footwears</button>
+    <a href="styling.html" class="btn-with-badge">
+    <button class="btn small">✨ Styling</button>
     <span class="badge">NEW</span>
-  </a>
-</div>
-   
-  <div class="divider">
+    </a>
+     
+    
+
+
+    
+  </div>
+   <div class="divider">
       <div class="divider-line"></div>
       <div class="divider-text">Free Shipping above orders $ 10</div>
       <div class="divider-line"></div>
@@ -318,54 +294,54 @@ a.equal-btn {
    
       <!-- CARD 1 -->
       <article class="card">
-        <img src="new images/product1.jpg" alt="Classic Professional Briefcase">
-        <h3>Classic Professional Briefcase</h3>
-        <p class="price">$ 12</p>
+        <img src="new images/product1.jpg" alt=" Classic Professional Briefcase">
+        <h3> Classic Professional Briefcase</h3>
+        <p class="price">$ 25</p>
         <a href="clothing_stripedshirt.html" class="btn">Description</a>
       </article>
       <!-- CARD 2 -->
       <article class="card">
-        <img src="new images/product2.jpg" alt="Compact Utility Waist Bag">
-        <h3>Compact Utility Waist Bag</h3>
-        <p class="price">$ 15</p>
+        <img src="new images/product2.png" alt=" Compact Utility Waist Bag">
+        <h3> Compact Utility Waist Bag</h3>
+        <p class="price">$ 23</p>
         <a href="clothing_denimjacket.html" class="btn">Description</a>
       </article>
       <!-- CARD 3 -->
       <article class="card">
-        <img src="new images/product3.jpg" alt="Classic Flap Multi-Pocket Backpack">
-        <h3>Classic Flap Multi-Pocket Backpack</h3>
-        <p class="price">$ 18</p>
+        <img src="new images/product3.jpg" alt=" Classic Flap Multi-Pocket Backpack">
+        <h3> Classic Flap Multi-Pocket Backpack</h3>
+        <p class="price">$ 26</p>
         <a href="clothing_yellowdresses.html" class="btn">Description</a>
       </article>
       <!-- CARD 4 -->
       <article class="card">
-        <img src="images/new4.jpg" alt="All-Black Mesh Chunky High-Top Sneakers">
-        <h3>All-Black Mesh Chunky High-Top Sneakers</h3>
-        <p class="price">$ 19</p>
+        <img src="new images/product4.jpg" alt=" Compact Zip Crossbody Bag">
+        <h3> Compact Zip Crossbody Bag</h3>
+        <p class="price">$ 23</p>
         <a href="clothing_graypants.html" class="btn">Description</a>
       </article>
       <article class="card">
-        <img src="images/new5.jpg" alt="Beige Ballet Flats">
-        <h3>Beige Ballet Flats</h3>
-        <p class="price">$ 16</p>
+        <img src="new images/product5.jpg" alt=" Dual-Tone Convertible Backpack">
+        <h3> Dual-Tone Convertible Backpack</h3>
+        <p class="price">$ 27</p>
         <a href="clothing_matcha.html" class="btn">Description</a>
       </article>
        <article class="card">
-        <img src="images/new6.jpg" alt="Silver Embroidered Flat Slides">
-        <h3>Silver Embroidered Flat Slides</h3>
-        <p class="price">$ 14</p>
+        <img src="new images/product6.jpg" alt="Classic Leather Laptop Briefcase">
+        <h3>Classic Leather Laptop Briefcase</h3>
+        <p class="price">$ 25</p>
         <a href="clothing_linen.html" class="btn">Description</a>
       </article>
         <article class="card">
-        <img src="images/new7.jpg" alt="Grey and White Runnig Sports Shoes">
-        <h3>Grey and White Runnig Sports Shoes</h3>
-        <p class="price">$ 20</p>
+        <img src="new images/product7.jpg" alt=" Everyday Canvas Tote Bag">
+        <h3> Everyday Canvas Tote Bag</h3>
+        <p class="price">$ 24</p>
         <a href="clothing_hoodie.html" class="btn">Description</a>
       </article>
        <article class="card">
-        <img src="images/replace.jpg" alt="Men Lace Up Shoes">
-        <h3>Men Lace Up Shoes</h3>
-        <p class="price">$ 13</p>
+        <img src="new images/product8.jpg" alt="Utility Laptop Messenger Bag">
+        <h3> Utility Laptop Messenger Bag</h3>
+        <p class="price">$ 27</p>
         <a href="clothing_sportsPants.html" class="btn">Description</a>
       </article>
     </section>
