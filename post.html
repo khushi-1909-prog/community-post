@@ -143,15 +143,19 @@
   </div>
 
   <script>
-   function createPost() {
+  function createPost() {
   const caption = document.getElementById("captionInput").value.trim();
   const file = document.getElementById("imageInput").files[0];
 
-  if (!caption && !file) {
+  // 🔥 Get product data (if user came from product page)
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+  if (!caption && !file && !product) {
     alert("Please add a caption or image!");
     return;
   }
 
+  // ✅ CASE 1: User uploaded image
   if (file) {
     const reader = new FileReader();
 
@@ -159,11 +163,26 @@
       savePost(caption, e.target.result);
     };
 
-    reader.readAsDataURL(file); // convert image to base64
-  } else {
+    reader.readAsDataURL(file);
+  }
+
+  // ✅ CASE 2: No upload, but product image exists
+  else if (product) {
+    savePost(
+      caption || `Reviewing: ${product.name} ✨`,
+      product.image
+    );
+
+    // 🧹 remove after use (important)
+    localStorage.removeItem("selectedProduct");
+  }
+
+  // ✅ CASE 3: Only text
+  else {
     savePost(caption, null);
   }
 
+  // reset inputs
   document.getElementById("captionInput").value = "";
   document.getElementById("imageInput").value = "";
 }
@@ -223,6 +242,21 @@ function savePost(caption, image) {
 }
 window.onload = function () {
   loadPosts();
+
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+  if (product) {
+    document.getElementById("captionInput").value =
+      `Reviewing: ${product.name} ✨`;
+
+    // show image
+    const preview = document.getElementById("preview");
+    preview.src = product.image;
+    preview.style.display = "block";
+
+    // store it temporarily
+    preview.setAttribute("data-product", product.image);
+  }
 };
 function loadPosts() {
   const container = document.getElementById("postsContainer");
