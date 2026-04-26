@@ -166,7 +166,7 @@ function loadPosts() {
   container.innerHTML = "";
 
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
-  let allPosts = [...defaultPosts, ...userPosts];
+  let allPosts = [...userPosts, ...defaultPosts];
 
   allPosts.forEach((postData, index) => {
 
@@ -183,7 +183,7 @@ function loadPosts() {
       <div class="actions">
         <span onclick="likePost(${index})">❤️ ${postData.likes}</span>
         <span onclick="toggleComments(this)">💬 Comment</span>
-        ${index >= defaultPosts.length ? `<span onclick="deletePost(${index})">🗑️ Delete</span>` : ""}
+        ${index < userPosts.length ? `<span onclick="deletePost(${index})">🗑️ Delete</span>` : ""}
       </div>
 
       <div class="comments">${commentsHTML}</div>
@@ -241,7 +241,7 @@ function savePost(caption, image) {
 function likePost(index) {
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
 
-  if (index >= defaultPosts.length) {
+  if (index < userPosts.length) {
     userPosts[index - defaultPosts.length].likes++;
     localStorage.setItem("posts", JSON.stringify(userPosts));
   } else {
@@ -255,7 +255,7 @@ function likePost(index) {
 function deletePost(index) {
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
 
-  userPosts.splice(index - defaultPosts.length, 1);
+ userPosts.splice(index, 1);
 
   localStorage.setItem("posts", JSON.stringify(userPosts));
   loadPosts();
@@ -274,7 +274,7 @@ function addComment(index, btn) {
 
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
 
-  if (index >= defaultPosts.length) {
+   if (index < userPosts.length) {
     userPosts[index - defaultPosts.length].comments.push("@you: " + text);
     localStorage.setItem("posts", JSON.stringify(userPosts));
   } else {
