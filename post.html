@@ -1,59 +1,47 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Community Page</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; }
-    .container { width: 90%; max-width: 600px; margin: 20px auto; }
-    h1 { text-align: center; margin-bottom: 20px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community Page</title>
 
-    .post-box, .post {
-      background: #fff; padding: 15px; border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 20px;
-      <img id="preview" style="display:none; width:100%; border-radius:10px; margin-top:10px;">
-    }
+<style>
+body { font-family: Arial; background: #f5f5f5; margin: 0; }
+.container { width: 90%; max-width: 600px; margin: 20px auto; }
 
-    textarea {
-      width: 100%; height: 80px; border: 1px solid #ddd;
-      border-radius: 8px; padding: 10px; resize: none; margin-bottom: 10px;
-    }
+.post-box, .post {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
 
-    input[type="file"] { margin-bottom: 10px; }
+textarea {
+  width: 100%; height: 80px;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
 
-    button {
-      width: 100%; padding: 10px; background: #007bff; color: white;
-      border: none; border-radius: 8px; cursor: pointer; font-size: 16px;
-    }
-    button:hover { background: #0056b3; }
+button {
+  width: 100%;
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
 
-    .post img { width: 100%; border-radius: 10px; margin-top: 10px; }
-    .username { font-weight: bold; margin-bottom: 5px; }
-    .caption { margin-bottom: 10px; }
+.post img {
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+}
 
-    /* Success Modal */
-    .modal {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: none; justify-content: center; align-items: center;
-    }
-
-    .modal-content {
-      background: white; padding: 20px; border-radius: 12px;
-      text-align: center; width: 80%; max-width: 300px;
-    }
-
-    .modal-content h2 { margin-bottom: 15px; }
-
-    .continue-btn {
-      background: #28a745;
-    }
-
-    .continue-btn:hover {
-      background: #1e7e34;
-    }
-    .actions {
+.actions {
   display: flex;
   gap: 15px;
   margin-top: 10px;
@@ -61,21 +49,10 @@
 
 .actions span {
   cursor: pointer;
-  font-size: 14px;
-}
-
-.comments {
-  margin-top: 10px;
-}
-
-.comment {
-  font-size: 14px;
-  margin-top: 5px;
 }
 
 .comment-box {
-  display: flex;
-  gap: 5px;
+  display: none;
   margin-top: 10px;
 }
 
@@ -83,146 +60,154 @@
   flex: 1;
   padding: 5px;
 }
-  </style>
+
+/* Popup */
+.modal {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-content {
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
+}
+</style>
 </head>
+
 <body>
 
-  <div class="container">
-    <h1>Community Posts</h1>
+<div class="container">
 
-    <div class="post-box">
-      <textarea id="captionInput" placeholder="Write something..."></textarea>
-      <input type="file" id="imageInput" accept="image/*">
-      <button onclick="createPost()">Post</button>
-    </div>
+<h2>Community Posts</h2>
 
-    <div id="postsContainer">
-      <div class="post">
-      
-  <div class="username">khushi</div>
-  <div class="caption">Loving this new outfit! 😍</div>
-  <img src="https://via.placeholder.com/500">
+<div class="post-box">
+  <textarea id="captionInput" placeholder="Write something..."></textarea>
+  <input type="file" id="imageInput">
+  
+  <!-- ✅ PREVIEW FIX -->
+  <img id="preview" style="display:none; width:100%; border-radius:10px; margin-top:10px;">
+  
+  <button onclick="createPost()">Post</button>
+</div>
 
-  <div class="actions">
-    <span onclick="likePost(this)">❤️ 0</span>
-    <span onclick="toggleComments(this)">💬 Comment</span>
-  </div>
+<div id="postsContainer"></div>
 
-  <div class="comments"></div>
+</div>
 
-  <div class="comment-box" style="display:none;">
-    <input type="text" placeholder="Add comment">
-    <button onclick="addComment(this)">Post</button>
+<!-- ✅ POPUP -->
+<div class="modal" id="successModal">
+  <div class="modal-content">
+    <h3>✅ Your review is posted!</h3>
+    <button onclick="goToForm()">OK</button>
   </div>
 </div>
-      <div class="post">
-  <div class="username">ABCD</div>
-  <div class="caption">Loving this new outfit! 😍</div>
-  <img src="https://via.placeholder.com/500">
 
-  <div class="actions">
-    <span onclick="likePost(this)">❤️ 0</span>
-    <span onclick="toggleComments(this)">💬 Comment</span>
-  </div>
+<script>
 
-  <div class="comments"></div>
+// LOAD POSTS
+function loadPosts() {
+  const container = document.getElementById("postsContainer");
+  container.innerHTML = "";
 
-  <div class="comment-box" style="display:none;">
-    <input type="text" placeholder="Add comment">
-    <button onclick="addComment(this)">Post</button>
-  </div>
-</div>
-  </div>
+  let posts = JSON.parse(localStorage.getItem("posts"));
 
-  <!-- Success Popup -->
-  <div class="modal" id="successModal">
-    <div class="modal-content">
-      <h2>✅ Post Uploaded!</h2>
-      <p>Your post is successfully uploaded.</p>
-      <button class="continue-btn" onclick="goToNextPage()">Continue</button>
-    </div>
-  </div>
+  // ✅ DEFAULT POSTS
+  if (!posts || posts.length === 0) {
+    posts = [
+      {
+        username: "khushi",
+        caption: "Loving this new outfit 😍",
+        image: "https://via.placeholder.com/500",
+        likes: 2,
+        comments: []
+      },
+      {
+        username: "fashiongirl",
+        caption: "Summer vibes ☀️",
+        image: "https://via.placeholder.com/500",
+        likes: 5,
+        comments: []
+      }
+    ];
+    localStorage.setItem("posts", JSON.stringify(posts));
+  }
 
-  <script>
- function createPost() {
+  posts.forEach((postData, index) => {
+
+    const post = document.createElement("div");
+    post.className = "post";
+
+    let commentsHTML = postData.comments.map(c =>
+      `<div>${c}</div>`
+    ).join("");
+
+    post.innerHTML = `
+      <b>${postData.username}</b>
+      <div>${postData.caption}</div>
+      ${postData.image ? `<img src="${postData.image}">` : ""}
+
+      <div class="actions">
+        <span onclick="likePost(${index})">❤️ ${postData.likes}</span>
+        <span onclick="toggleComments(this)">💬 Comment</span>
+        <span onclick="deletePost(${index})">🗑️ Delete</span>
+      </div>
+
+      <div class="comments">${commentsHTML}</div>
+
+      <div class="comment-box">
+        <input type="text" placeholder="Add comment">
+        <button onclick="addComment(${index}, this)">Post</button>
+      </div>
+    `;
+
+    container.appendChild(post);
+  });
+}
+
+// CREATE POST
+function createPost() {
   const caption = document.getElementById("captionInput").value.trim();
   const file = document.getElementById("imageInput").files[0];
   const preview = document.getElementById("preview");
 
-  let imageData = null;
+  if (!caption && !file && preview.style.display !== "block") {
+    alert("Add something!");
+    return;
+  }
 
-  // CASE 1: user uploaded image
   if (file) {
     const reader = new FileReader();
 
-    reader.onload = function (e) {
+    reader.onload = function(e) {
       savePost(caption, e.target.result);
     };
 
     reader.readAsDataURL(file);
   }
-
-  // CASE 2: product image from previous page
-  else if (preview && preview.style.display === "block") {
-    imageData = preview.src;
-    savePost(caption, imageData);
-
-    localStorage.removeItem("selectedProduct"); // cleanup
+  else if (preview.style.display === "block") {
+    savePost(caption, preview.src);
+    localStorage.removeItem("selectedProduct");
   }
-
-  // CASE 3: only caption
-  else if (caption) {
-    savePost(caption, null);
-  }
-
   else {
-    alert("Please add something!");
-    return;
+    savePost(caption, null);
   }
 
   document.getElementById("captionInput").value = "";
   document.getElementById("imageInput").value = "";
   preview.style.display = "none";
-}
-    function goToNextPage() {
-      window.location.href = "nextpage.html"; // change this to your actual page
-    }
-    function likePost(el) {
-  let parts = el.innerText.split(' ');
-  let count = parseInt(parts[1]);
 
-  if (el.classList.contains('liked')) {
-    count--;
-    el.classList.remove('liked');
-  } else {
-    count++;
-    el.classList.add('liked');
-  }
-
-  el.innerText = `❤️ ${count}`;
+  // ✅ SHOW POPUP
+  document.getElementById("successModal").style.display = "flex";
 }
 
-function toggleComments(el) {
-  const post = el.closest('.post');
-  const box = post.querySelector('.comment-box');
-
-  box.style.display = box.style.display === 'none' ? 'flex' : 'none';
-}
-
-function addComment(btn) {
-  const input = btn.previousElementSibling;
-  const text = input.value.trim();
-
-  if (!text) return;
-
-  const comment = document.createElement('div');
-  comment.className = 'comment';
-  comment.innerText = '@you: ' + text;
-
-  btn.parentElement.previousElementSibling.appendChild(comment);
-
-  input.value = '';
-}
+// SAVE POST
 function savePost(caption, image) {
   let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
@@ -235,9 +220,44 @@ function savePost(caption, image) {
   });
 
   localStorage.setItem("posts", JSON.stringify(posts));
-
   loadPosts();
 }
+
+// LIKE
+function likePost(index) {
+  let posts = JSON.parse(localStorage.getItem("posts"));
+  posts[index].likes++;
+  localStorage.setItem("posts", JSON.stringify(posts));
+  loadPosts();
+}
+
+// DELETE
+function deletePost(index) {
+  let posts = JSON.parse(localStorage.getItem("posts"));
+  posts.splice(index, 1);
+  localStorage.setItem("posts", JSON.stringify(posts));
+  loadPosts();
+}
+
+// COMMENTS
+function toggleComments(el) {
+  const box = el.closest('.post').querySelector('.comment-box');
+  box.style.display = box.style.display === "none" ? "block" : "none";
+}
+
+function addComment(index, btn) {
+  const input = btn.previousElementSibling;
+  const text = input.value.trim();
+  if (!text) return;
+
+  let posts = JSON.parse(localStorage.getItem("posts"));
+  posts[index].comments.push("@you: " + text);
+
+  localStorage.setItem("posts", JSON.stringify(posts));
+  loadPosts();
+}
+
+// PRODUCT AUTO FILL
 window.onload = function () {
   loadPosts();
 
@@ -248,74 +268,17 @@ window.onload = function () {
       `Reviewing: ${product.name} ✨`;
 
     const preview = document.getElementById("preview");
-
-    if (preview) {
-      preview.src = product.image;
-      preview.style.display = "block";
-    }
+    preview.src = product.image;
+    preview.style.display = "block";
   }
 };
-function loadPosts() {
-  const container = document.getElementById("postsContainer");
-  container.innerHTML = "";
 
-  let posts = JSON.parse(localStorage.getItem("posts")) || [];
-
-  posts.forEach((postData, index) => {
-    const post = document.createElement("div");
-    post.className = "post";
-
-    let imageHTML = postData.image ? `<img src="${postData.image}">` : "";
-
-    let commentsHTML = postData.comments
-      .map(c => `<div class="comment">${c}</div>`)
-      .join("");
-
-    post.innerHTML = `
-      <div class="username">${postData.username}</div>
-      <div class="caption">${postData.caption}</div>
-      ${imageHTML}
-
-      <div class="actions">
-        <span onclick="likePostStorage(${index}, this)">❤️ ${postData.likes}</span>
-        <span onclick="toggleComments(this)">💬 Comment</span>
-      </div>
-
-      <div class="comments">${commentsHTML}</div>
-
-      <div class="comment-box" style="display:none;">
-        <input type="text" placeholder="Add comment">
-        <button onclick="addCommentStorage(${index}, this)">Post</button>
-      </div>
-    `;
-
-    container.appendChild(post);
-  });
+// REDIRECT
+function goToForm() {
+  window.location.href = "https://forms.gle/YOUR_FORM_LINK";
 }
-function likePostStorage(index, el) {
-  let posts = JSON.parse(localStorage.getItem("posts"));
 
-  posts[index].likes++;
-
-  localStorage.setItem("posts", JSON.stringify(posts));
-
-  loadPosts();
-}
-function addCommentStorage(index, btn) {
-  const input = btn.previousElementSibling;
-  const text = input.value.trim();
-
-  if (!text) return;
-
-  let posts = JSON.parse(localStorage.getItem("posts"));
-
-  posts[index].comments.push("@you: " + text);
-
-  localStorage.setItem("posts", JSON.stringify(posts));
-
-  loadPosts();
-}
-  </script>
+</script>
 
 </body>
 </html>
