@@ -12,6 +12,7 @@
     .post-box, .post {
       background: #fff; padding: 15px; border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 20px;
+      <img id="preview" style="display:none; width:100%; border-radius:10px; margin-top:10px;">
     }
 
     textarea {
@@ -143,19 +144,14 @@
   </div>
 
   <script>
-  function createPost() {
+ function createPost() {
   const caption = document.getElementById("captionInput").value.trim();
   const file = document.getElementById("imageInput").files[0];
+  const preview = document.getElementById("preview");
 
-  // 🔥 Get product data (if user came from product page)
-  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+  let imageData = null;
 
-  if (!caption && !file && !product) {
-    alert("Please add a caption or image!");
-    return;
-  }
-
-  // ✅ CASE 1: User uploaded image
+  // CASE 1: user uploaded image
   if (file) {
     const reader = new FileReader();
 
@@ -166,25 +162,27 @@
     reader.readAsDataURL(file);
   }
 
-  // ✅ CASE 2: No upload, but product image exists
-  else if (product) {
-    savePost(
-      caption || `Reviewing: ${product.name} ✨`,
-      product.image
-    );
+  // CASE 2: product image from previous page
+  else if (preview && preview.style.display === "block") {
+    imageData = preview.src;
+    savePost(caption, imageData);
 
-    // 🧹 remove after use (important)
-    localStorage.removeItem("selectedProduct");
+    localStorage.removeItem("selectedProduct"); // cleanup
   }
 
-  // ✅ CASE 3: Only text
-  else {
+  // CASE 3: only caption
+  else if (caption) {
     savePost(caption, null);
   }
 
-  // reset inputs
+  else {
+    alert("Please add something!");
+    return;
+  }
+
   document.getElementById("captionInput").value = "";
   document.getElementById("imageInput").value = "";
+  preview.style.display = "none";
 }
     function goToNextPage() {
       window.location.href = "nextpage.html"; // change this to your actual page
@@ -249,13 +247,12 @@ window.onload = function () {
     document.getElementById("captionInput").value =
       `Reviewing: ${product.name} ✨`;
 
-    // show image
     const preview = document.getElementById("preview");
-    preview.src = product.image;
-    preview.style.display = "block";
 
-    // store it temporarily
-    preview.setAttribute("data-product", product.image);
+    if (preview) {
+      preview.src = product.image;
+      preview.style.display = "block";
+    }
   }
 };
 function loadPosts() {
