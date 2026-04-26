@@ -22,7 +22,6 @@ h2 {
   text-align: center;
 }
 
-/* POST BOX */
 .post-box, .post {
   background: #fff;
   padding: 15px;
@@ -31,7 +30,6 @@ h2 {
   margin-bottom: 20px;
 }
 
-/* TEXTAREA */
 textarea {
   width: 100%;
   height: 80px;
@@ -41,7 +39,7 @@ textarea {
   border: 1px solid #ccc;
 }
 
-/* BUTTONS */
+/* CLEAN BUTTON */
 button {
   padding: 8px 18px;
   background: #007bff;
@@ -54,19 +52,12 @@ button {
   margin: 10px auto 0;
 }
 
-.upload-btn {
-  background: #6c757d;
-  font-size: 13px;
-}
-
-/* IMAGE */
 .post img {
   width: 100%;
   border-radius: 10px;
   margin-top: 10px;
 }
 
-/* ACTIONS */
 .actions {
   display: flex;
   gap: 15px;
@@ -76,11 +67,6 @@ button {
 .actions span {
   cursor: pointer;
   font-size: 14px;
-}
-
-/* COMMENTS */
-.comments {
-  margin-top: 10px;
 }
 
 .comment-box {
@@ -120,17 +106,9 @@ button {
 <h2>Community Posts</h2>
 
 <div class="post-box">
-  <textarea id="captionInput" placeholder="Write something..."></textarea>
+  <textarea id="captionInput" placeholder="Write your review..."></textarea>
 
-  <!-- Hidden file input -->
-  <input type="file" id="imageInput" accept="image/*" style="display:none;">
-
-  <!-- Custom upload button -->
-  <button class="upload-btn" onclick="document.getElementById('imageInput').click()">
-    📷 Upload Image
-  </button>
-
-  <!-- Preview -->
+  <!-- ONLY PRODUCT PREVIEW -->
   <img id="preview" style="display:none; width:100%; border-radius:10px; margin-top:10px;">
 
   <button onclick="createPost()">Post</button>
@@ -150,14 +128,14 @@ button {
 
 <script>
 
-/* 🔥 DEFAULT POSTS (ALWAYS STAY) */
+/* DEFAULT POSTS */
 const defaultPosts = [
   {
     username: "khushi",
     caption: "Loving this new outfit 😍",
     image: "https://via.placeholder.com/500",
     likes: 2,
-    comments: ["@user: Amazing!", "@you: So pretty!"]
+    comments: []
   },
   {
     username: "fashiongirl",
@@ -174,8 +152,6 @@ function loadPosts() {
   container.innerHTML = "";
 
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
-
-  // combine default + user posts
   let allPosts = [...defaultPosts, ...userPosts];
 
   allPosts.forEach((postData, index) => {
@@ -183,9 +159,7 @@ function loadPosts() {
     const post = document.createElement("div");
     post.className = "post";
 
-    let commentsHTML = postData.comments.map(c =>
-      `<div>${c}</div>`
-    ).join("");
+    let commentsHTML = postData.comments.map(c => `<div>${c}</div>`).join("");
 
     post.innerHTML = `
       <b>${postData.username}</b>
@@ -213,33 +187,21 @@ function loadPosts() {
 /* CREATE POST */
 function createPost() {
   const caption = document.getElementById("captionInput").value.trim();
-  const file = document.getElementById("imageInput").files[0];
   const preview = document.getElementById("preview");
 
-  if (!caption && !file && preview.style.display !== "block") {
+  if (!caption && preview.style.display !== "block") {
     alert("Add something!");
     return;
   }
 
-  if (file) {
-    const reader = new FileReader();
-
-    reader.onload = function(e) {
-      savePost(caption, e.target.result);
-    };
-
-    reader.readAsDataURL(file);
-  }
-  else if (preview.style.display === "block") {
+  if (preview.style.display === "block") {
     savePost(caption, preview.src);
     localStorage.removeItem("selectedProduct");
-  }
-  else {
+  } else {
     savePost(caption, null);
   }
 
   document.getElementById("captionInput").value = "";
-  document.getElementById("imageInput").value = "";
   preview.style.display = "none";
 
   document.getElementById("successModal").style.display = "flex";
@@ -275,7 +237,7 @@ function likePost(index) {
   loadPosts();
 }
 
-/* DELETE (only user posts) */
+/* DELETE */
 function deletePost(index) {
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
 
@@ -308,7 +270,7 @@ function addComment(index, btn) {
   loadPosts();
 }
 
-/* PRODUCT AUTO FILL */
+/* PRODUCT AUTO-FILL */
 window.onload = function () {
   loadPosts();
 
