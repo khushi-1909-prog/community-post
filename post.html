@@ -128,7 +128,7 @@ button {
 
 <script>
 
-/* DEFAULT POSTS */
+/* ✅ 4 DEFAULT POSTS ONLY */
 const defaultPosts = [
   {
     username: "khushi",
@@ -142,6 +142,20 @@ const defaultPosts = [
     caption: "Summer vibes ☀️",
     image: "https://via.placeholder.com/500",
     likes: 5,
+    comments: []
+  },
+  {
+    username: "stylequeen",
+    caption: "This bag is totally worth it 💼✨",
+    image: "https://via.placeholder.com/500",
+    likes: 3,
+    comments: []
+  },
+  {
+    username: "trendsetter",
+    caption: "Minimal & classy look 🔥",
+    image: "https://via.placeholder.com/500",
+    likes: 4,
     comments: []
   }
 ];
@@ -190,7 +204,7 @@ function createPost() {
   const preview = document.getElementById("preview");
 
   if (!caption && preview.style.display !== "block") {
-    alert("Add something!");
+    alert("Please write something!");
     return;
   }
 
@@ -204,7 +218,7 @@ function createPost() {
   document.getElementById("captionInput").value = "";
   preview.style.display = "none";
 
-  document.getElementById("successModal").style.display = "flex";
+  alert("✅ Your review has been posted successfully!");
 }
 
 /* SAVE POST */
@@ -270,10 +284,17 @@ function addComment(index, btn) {
   loadPosts();
 }
 
-/* PRODUCT AUTO-FILL */
+/* ✅ PAGE LOAD ALERT */
 window.onload = function () {
   loadPosts();
 
+  alert(
+    "Welcome to the Community Page!\n\n" +
+    "Here you can share your reviews about the products you purchased.\n\n" +
+    "⚠️ IMPORTANT: PLEASE SCROLL TO THE END OF THE PAGE."
+  );
+
+  // product auto-fill
   const product = JSON.parse(localStorage.getItem("selectedProduct"));
 
   if (product) {
@@ -286,12 +307,21 @@ window.onload = function () {
   }
 };
 
-/* REDIRECT */
-function goToForm() {
-  window.location.href = "https://forms.gle/YOUR_FORM_LINK";
-}
+/* ✅ SCROLL END DETECTION */
+window.onscroll = function () {
+  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
+
+    // prevent multiple alerts
+    if (!window.reachedEnd) {
+      window.reachedEnd = true;
+
+      alert("You have reached the end.\n\nClick OK to continue to the feedback form.");
+
+      window.location.href = "https://forms.gle/YOUR_FORM_LINK";
+    }
+  }
+};
 
 </script>
-
 </body>
 </html>
