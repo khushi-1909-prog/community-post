@@ -222,6 +222,19 @@ window.onload = function () {
   setTimeout(() => {
     document.getElementById("welcomePopup").style.display = "flex";
   }, 300);
+   const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+  if (product) {
+    const textarea = document.getElementById("captionInput");
+    textarea.placeholder = `Write your reviews about ${product.name}`;
+
+    const preview = document.getElementById("preview");
+    preview.src = product.image;
+    preview.style.display = "block";
+
+    // open post modal AFTER welcome closes (optional better UX)
+    document.getElementById("postModal").style.display = "flex";
+  }
 };
 
 /* SCROLL END POPUP */
