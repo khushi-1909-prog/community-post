@@ -315,7 +315,7 @@ function closeWelcome() {
 
   if (product) {
     const textarea = document.getElementById("captionInput");
-    textarea.placeholder = `Write your reviews about ${product.name}`;
+    setDynamicPlaceholder(product.name);
 
     const preview = document.getElementById("preview");
     preview.src = product.image;
@@ -352,6 +352,20 @@ window.onscroll = function () {
     }
   }
 };
+function setDynamicPlaceholder(productName) {
+  const textarea = document.getElementById("captionInput");
+
+  const placeholders = [
+    `What do you think about ${productName}?`,
+    `Share your experience with ${productName}...`,
+    `Would you recommend ${productName}? Why?`,
+    `How is the quality of ${productName}?`,
+    `Write your honest review about ${productName}`
+  ];
+
+  const randomText = placeholders[Math.floor(Math.random() * placeholders.length)];
+  textarea.placeholder = randomText;
+}
 
 </script>
 
