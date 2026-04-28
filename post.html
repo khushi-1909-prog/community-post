@@ -14,7 +14,7 @@ body {
 
 .container {
   width: 85%;
-  max-width: 520px; /* ✅ smaller post width */
+  max-width: 520px;
   margin: 20px auto;
 }
 
@@ -22,7 +22,7 @@ h2 {
   text-align: center;
 }
 
-/* CREATE POST BUTTON */
+/* BUTTON */
 .create-btn {
   display: block;
   margin: 15px auto;
@@ -59,6 +59,7 @@ h2 {
   cursor: pointer;
 }
 
+/* COMMENTS */
 .comment-box {
   display: none;
   margin-top: 8px;
@@ -68,7 +69,7 @@ h2 {
   width: 65%;
 }
 
-/* 🔥 MODAL (POPUP POST BOX) */
+/* MODAL */
 .modal {
   position: fixed;
   top:0; left:0;
@@ -118,17 +119,14 @@ textarea {
 <body>
 
 <div class="container">
-
 <h2>Community Posts</h2>
 
-<!-- OPEN MODAL BUTTON -->
 <button class="create-btn" onclick="openModal()">Create Post</button>
 
 <div id="postsContainer"></div>
-
 </div>
 
-<!-- 🔥 POST MODAL -->
+<!-- MODAL -->
 <div class="modal" id="postModal">
   <div class="modal-content">
 
@@ -137,9 +135,10 @@ textarea {
       <span onclick="closeModal()" style="cursor:pointer;">✖</span>
     </div>
 
-    <textarea id="captionInput">
-What are your reviews about this product?
-    </textarea>
+    <textarea id="captionInput">What are your reviews about this product?</textarea>
+
+    <!-- ✅ PRODUCT IMAGE PREVIEW -->
+    <img id="productPreview" style="width:100%; border-radius:10px; margin-top:10px; display:none;">
 
     <button class="post-btn" onclick="createPost()">Post</button>
 
@@ -148,12 +147,36 @@ What are your reviews about this product?
 
 <script>
 
-/* DEFAULT POSTS */
+/* ✅ DEFAULT POSTS (WITH IMAGES) */
 const defaultPosts = [
-  {username:"khushi", caption:"Loved this outfit 😍", image:"https://via.placeholder.com/500", likes:2, comments:[]},
-  {username:"fashiongirl", caption:"Summer vibes ☀️", image:"https://via.placeholder.com/500", likes:5, comments:[]},
-  {username:"stylequeen", caption:"Totally worth it 💼✨", image:"https://via.placeholder.com/500", likes:3, comments:[]},
-  {username:"trendsetter", caption:"Minimal look 🔥", image:"https://via.placeholder.com/500", likes:4, comments:[]}
+  {
+    username: "khushi",
+    caption: "Loving this new outfit 😍",
+    image: "https://via.placeholder.com/500",
+    likes: 2,
+    comments: []
+  },
+  {
+    username: "fashiongirl",
+    caption: "Summer vibes ☀️",
+    image: "https://via.placeholder.com/500",
+    likes: 5,
+    comments: []
+  },
+  {
+    username: "stylequeen",
+    caption: "This bag is totally worth it 💼✨",
+    image: "https://via.placeholder.com/500",
+    likes: 3,
+    comments: []
+  },
+  {
+    username: "trendsetter",
+    caption: "Minimal & classy look 🔥",
+    image: "https://via.placeholder.com/500",
+    likes: 4,
+    comments: []
+  }
 ];
 
 /* LOAD POSTS */
@@ -194,7 +217,7 @@ function loadPosts() {
   });
 }
 
-/* MODAL CONTROL */
+/* MODAL */
 function openModal() {
   document.getElementById("postModal").style.display = "flex";
 }
@@ -206,16 +229,24 @@ function closeModal() {
 /* CREATE POST */
 function createPost() {
   const caption = document.getElementById("captionInput").value.trim();
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+  const preview = document.getElementById("productPreview");
 
   if (!caption) {
-    alert("Write something!");
+    alert("Please write something!");
     return;
   }
 
-  savePost(caption);
+  if (product) {
+    savePost(caption, product.image);
+    localStorage.removeItem("selectedProduct");
+  } else {
+    savePost(caption, null);
+  }
 
   document.getElementById("captionInput").value =
     "What are your reviews about this product?";
+  preview.style.display = "none";
 
   closeModal();
 
@@ -223,12 +254,13 @@ function createPost() {
 }
 
 /* SAVE */
-function savePost(caption) {
+function savePost(caption, image) {
   let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
   posts.unshift({
     username: "@you",
     caption: caption,
+    image: image,
     likes: 0,
     comments: []
   });
@@ -254,6 +286,7 @@ function likePost(index) {
 /* DELETE */
 function deletePost(index) {
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
+
   userPosts.splice(index, 1);
   localStorage.setItem("posts", JSON.stringify(userPosts));
   loadPosts();
@@ -282,7 +315,7 @@ function addComment(index, btn) {
   loadPosts();
 }
 
-/* PAGE LOAD ALERT */
+/* PAGE LOAD */
 window.onload = function () {
   loadPosts();
 
@@ -291,6 +324,19 @@ window.onload = function () {
     "Share your reviews about purchased products.\n\n" +
     "⚠️ PLEASE SCROLL TO THE END."
   );
+
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+  if (product) {
+    openModal();
+
+    document.getElementById("captionInput").value =
+      `What are your reviews about ${product.name}?`;
+
+    const preview = document.getElementById("productPreview");
+    preview.src = product.image;
+    preview.style.display = "block";
+  }
 };
 
 /* SCROLL END */
