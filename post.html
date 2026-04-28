@@ -14,33 +14,30 @@ body {
 
 .container {
   width: 90%;
-  max-width: 500px;
-  margin: 20px auto;
+  max-width: 550px;
+  margin: 15px auto;
 }
 
 h2 {
   text-align: center;
 }
 
-/* SMALLER POST CARDS */
+/* POSTS (smaller cards) */
 .post {
   background: #fff;
   padding: 12px;
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
   margin-bottom: 15px;
   font-size: 14px;
 }
 
-/* ✅ FIXED IMAGE (NO CROPPING) */
-.post img, #preview {
+/* IMAGE FIX (no crop) */
+.post img {
   width: 100%;
   height: auto;
-  max-height: 300px;
-  object-fit: contain;
-  border-radius: 10px;
+  border-radius: 8px;
   margin-top: 8px;
-  background: #f5f5f5;
 }
 
 /* ACTIONS */
@@ -63,7 +60,22 @@ h2 {
 
 .comment-box input {
   width: 70%;
-  padding: 4px;
+  padding: 5px;
+}
+
+/* FLOATING BUTTON */
+.fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #007bff;
+  color: white;
+  font-size: 22px;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
 }
 
 /* POPUP */
@@ -79,28 +91,38 @@ h2 {
 
 .modal-content {
   background:#fff;
-  padding:20px;
+  padding:15px;
   border-radius:12px;
   width:90%;
-  max-width:350px;
+  max-width:400px;
 }
 
+/* TEXTAREA */
 textarea {
   width:100%;
-  height:80px;
+  height:70px;
   border-radius:8px;
   padding:8px;
   border:1px solid #ccc;
 }
 
-.modal button {
-  margin-top:10px;
-  padding:6px 14px;
-  border:none;
-  border-radius:20px;
+/* BUTTON */
+.modal-content button {
+  padding:8px 18px;
   background:#007bff;
   color:#fff;
+  border:none;
+  border-radius:20px;
+  margin-top:10px;
   cursor:pointer;
+}
+
+/* PREVIEW IMAGE */
+#preview {
+  display:none;
+  width:100%;
+  border-radius:8px;
+  margin-top:8px;
 }
 </style>
 </head>
@@ -112,15 +134,16 @@ textarea {
 <div id="postsContainer"></div>
 </div>
 
-<!-- POPUP -->
+<!-- FLOAT BUTTON -->
+<button class="fab" onclick="openPopup()">＋</button>
+
+<!-- POST POPUP -->
 <div class="modal" id="postModal">
   <div class="modal-content">
-    <h3>Create Post</h3>
+    <textarea id="captionInput" placeholder="Write your reviews here"></textarea>
 
-    <textarea id="captionInput"></textarea>
-
-    <!-- PRODUCT IMAGE -->
-    <img id="preview" style="display:none;">
+    <!-- PRODUCT IMAGE AUTO SHOW -->
+    <img id="preview">
 
     <button onclick="createPost()">Post</button>
   </div>
@@ -130,34 +153,10 @@ textarea {
 
 /* DEFAULT POSTS */
 const defaultPosts = [
-  {
-    username: "khushi",
-    caption: "Loving this new outfit 😍",
-    image: "https://via.placeholder.com/500",
-    likes: 2,
-    comments: []
-  },
-  {
-    username: "fashiongirl",
-    caption: "Summer vibes ☀️",
-    image: "https://via.placeholder.com/500",
-    likes: 5,
-    comments: []
-  },
-  {
-    username: "stylequeen",
-    caption: "This bag is totally worth it 💼✨",
-    image: "https://via.placeholder.com/500",
-    likes: 3,
-    comments: []
-  },
-  {
-    username: "trendsetter",
-    caption: "Minimal & classy 🔥",
-    image: "https://via.placeholder.com/500",
-    likes: 4,
-    comments: []
-  }
+  {username:"khushi",caption:"Loving this outfit 😍",image:"https://via.placeholder.com/500",likes:2,comments:[]},
+  {username:"fashiongirl",caption:"Summer vibes ☀️",image:"https://via.placeholder.com/500",likes:4,comments:[]},
+  {username:"stylequeen",caption:"Amazing quality 💼✨",image:"https://via.placeholder.com/500",likes:3,comments:[]},
+  {username:"trendsetter",caption:"Minimal & classy 🔥",image:"https://via.placeholder.com/500",likes:5,comments:[]}
 ];
 
 /* LOAD POSTS */
@@ -174,7 +173,7 @@ function loadPosts() {
     const post = document.createElement("div");
     post.className = "post";
 
-    let commentsHTML = postData.comments.map(c => `<div>${c}</div>`).join("");
+    let commentsHTML = postData.comments.map(c=>`<div>${c}</div>`).join("");
 
     post.innerHTML = `
       <b>${postData.username}</b>
@@ -183,7 +182,7 @@ function loadPosts() {
 
       <div class="actions">
         <span onclick="likePost(${index})">❤️ ${postData.likes}</span>
-        <span onclick="toggleComments(this)">💬</span>
+        <span onclick="toggleComments(this)">💬 Comment</span>
         ${index < userPosts.length ? `<span onclick="deletePost(${index})">🗑️</span>` : ""}
       </div>
 
@@ -199,41 +198,43 @@ function loadPosts() {
   });
 }
 
+/* POPUP CONTROL */
+function openPopup() {
+  document.getElementById("postModal").style.display = "flex";
+}
+
 /* CREATE POST */
 function createPost() {
   const caption = document.getElementById("captionInput").value.trim();
   const preview = document.getElementById("preview");
 
   if (!caption && preview.style.display !== "block") {
-    alert("Please write something!");
+    alert("Write something!");
     return;
   }
 
-  savePost(caption, preview.style.display === "block" ? preview.src : null);
+  savePost(caption, preview.style.display==="block"?preview.src:null);
 
-  // reset
-  document.getElementById("captionInput").value = "";
-  preview.style.display = "none";
-  preview.src = "";
+  document.getElementById("captionInput").value="";
+  preview.style.display="none";
+  document.getElementById("postModal").style.display="none";
 
-  document.getElementById("postModal").style.display = "none";
-
-  alert("✅ Your review has been posted!");
+  alert("✅ Your review posted!");
 }
 
 /* SAVE */
-function savePost(caption, image) {
+function savePost(caption,image) {
   let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
   posts.unshift({
-    username: "@you",
+    username:"@you",
     caption,
     image,
-    likes: 0,
-    comments: []
+    likes:0,
+    comments:[]
   });
 
-  localStorage.setItem("posts", JSON.stringify(posts));
+  localStorage.setItem("posts",JSON.stringify(posts));
   loadPosts();
 }
 
@@ -241,85 +242,73 @@ function savePost(caption, image) {
 function likePost(index) {
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
 
-  if (index < userPosts.length) {
+  if(index < userPosts.length){
     userPosts[index].likes++;
-    localStorage.setItem("posts", JSON.stringify(userPosts));
+    localStorage.setItem("posts",JSON.stringify(userPosts));
   } else {
-    defaultPosts[index - userPosts.length].likes++;
+    defaultPosts[index-userPosts.length].likes++;
   }
 
   loadPosts();
 }
 
 /* DELETE */
-function deletePost(index) {
+function deletePost(index){
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
-
-  userPosts.splice(index, 1);
-
-  localStorage.setItem("posts", JSON.stringify(userPosts));
+  userPosts.splice(index,1);
+  localStorage.setItem("posts",JSON.stringify(userPosts));
   loadPosts();
 }
 
 /* COMMENTS */
-function toggleComments(el) {
+function toggleComments(el){
   const box = el.closest('.post').querySelector('.comment-box');
-  box.style.display = box.style.display === "none" ? "block" : "none";
+  box.style.display = box.style.display==="block"?"none":"block";
 }
 
-function addComment(index, btn) {
-  const input = btn.previousElementSibling;
-  const text = input.value.trim();
-  if (!text) return;
+function addComment(index,btn){
+  const text = btn.previousElementSibling.value.trim();
+  if(!text) return;
 
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
 
-  if (index < userPosts.length) {
-    userPosts[index].comments.push("@you: " + text);
-    localStorage.setItem("posts", JSON.stringify(userPosts));
+  if(index < userPosts.length){
+    userPosts[index].comments.push("@you: "+text);
+    localStorage.setItem("posts",JSON.stringify(userPosts));
   } else {
-    defaultPosts[index - userPosts.length].comments.push("@you: " + text);
+    defaultPosts[index-userPosts.length].comments.push("@you: "+text);
   }
 
   loadPosts();
 }
 
-/* ON LOAD */
-window.onload = function () {
+/* LOAD + PRODUCT AUTO IMAGE */
+window.onload = function(){
   loadPosts();
 
-  alert(
-    "Welcome to the Community Page!\n\n" +
-    "Share your product reviews.\n\n" +
-    "⚠️ PLEASE SCROLL TO THE END."
-  );
+  alert("Welcome to Community Page\n\nShare your product reviews\n\n⚠️ Scroll till end");
 
   const product = JSON.parse(localStorage.getItem("selectedProduct"));
 
-  if (product) {
-    const textarea = document.getElementById("captionInput");
-
-    // ✅ PLACEHOLDER FIX
-    textarea.placeholder = `Write your reviews about ${product.name}`;
+  if(product){
+    document.getElementById("captionInput").value =
+      `Reviewing: ${product.name} ✨`;
 
     const preview = document.getElementById("preview");
     preview.src = product.image;
     preview.style.display = "block";
 
-    // ✅ AUTO OPEN POPUP
-    document.getElementById("postModal").style.display = "flex";
+    openPopup();
   }
 };
 
-/* SCROLL END */
-window.onscroll = function () {
-  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
-    if (!window.reachedEnd) {
-      window.reachedEnd = true;
-
-      alert("You reached the end. Continue to feedback form.");
-
-      window.location.href = "https://forms.gle/YOUR_FORM_LINK";
+/* SCROLL ALERT */
+window.onscroll = function(){
+  if((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5){
+    if(!window.endReached){
+      window.endReached=true;
+      alert("Click OK to continue to form");
+      window.location.href="https://forms.gle/YOUR_FORM_LINK";
     }
   }
 };
