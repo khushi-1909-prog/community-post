@@ -22,7 +22,7 @@ h2 {
   text-align: center;
 }
 
-/* POST CARD (SMALL & CLEAN) */
+/* SMALLER POST CARDS */
 .post {
   background: #fff;
   padding: 12px;
@@ -32,10 +32,11 @@ h2 {
   font-size: 14px;
 }
 
-.post img {
+/* ✅ FIXED IMAGE (NO CROPPING) */
+.post img, #preview {
   width: 100%;
   height: auto;
-  max-height: 280px;
+  max-height: 300px;
   object-fit: contain;
   border-radius: 10px;
   margin-top: 8px;
@@ -65,19 +66,6 @@ h2 {
   padding: 4px;
 }
 
-/* FLOATING BUTTON */
-.fab {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #007bff;
-  color: #fff;
-  border: none;
-  padding: 12px 16px;
-  border-radius: 50px;
-  cursor: pointer;
-}
-
 /* POPUP */
 .modal {
   position: fixed;
@@ -105,15 +93,6 @@ textarea {
   border:1px solid #ccc;
 }
 
-.modal img {
-  width:100%;
-  height:auto;
-  max-height:250px;
-  object-fit: contain;
-  border-radius:10px;
-  margin-top:10px;
-}
-
 .modal button {
   margin-top:10px;
   padding:6px 14px;
@@ -133,9 +112,6 @@ textarea {
 <div id="postsContainer"></div>
 </div>
 
-<!-- FLOAT BUTTON -->
-<button class="fab" onclick="openPostPopup()">+ Post</button>
-
 <!-- POPUP -->
 <div class="modal" id="postModal">
   <div class="modal-content">
@@ -147,7 +123,6 @@ textarea {
     <img id="preview" style="display:none;">
 
     <button onclick="createPost()">Post</button>
-    <button onclick="closePopup()">Cancel</button>
   </div>
 </div>
 
@@ -224,43 +199,24 @@ function loadPosts() {
   });
 }
 
-/* POPUP OPEN */
-function openPostPopup() {
-  document.getElementById("postModal").style.display = "flex";
-
-  const textarea = document.getElementById("captionInput");
-  textarea.value = "";
-
-  const product = JSON.parse(localStorage.getItem("selectedProduct"));
-
-  if (product) {
-    textarea.placeholder = `Write your reviews about ${product.name}`;
-    const preview = document.getElementById("preview");
-    preview.src = product.image;
-    preview.style.display = "block";
-  } else {
-    textarea.placeholder = "Write your reviews...";
-  }
-}
-
-/* CLOSE */
-function closePopup() {
-  document.getElementById("postModal").style.display = "none";
-}
-
 /* CREATE POST */
 function createPost() {
   const caption = document.getElementById("captionInput").value.trim();
   const preview = document.getElementById("preview");
 
   if (!caption && preview.style.display !== "block") {
-    alert("Write something!");
+    alert("Please write something!");
     return;
   }
 
   savePost(caption, preview.style.display === "block" ? preview.src : null);
 
-  closePopup();
+  // reset
+  document.getElementById("captionInput").value = "";
+  preview.style.display = "none";
+  preview.src = "";
+
+  document.getElementById("postModal").style.display = "none";
 
   alert("✅ Your review has been posted!");
 }
@@ -328,24 +284,41 @@ function addComment(index, btn) {
   loadPosts();
 }
 
-/* LOAD */
+/* ON LOAD */
 window.onload = function () {
   loadPosts();
 
   alert(
-    "Welcome to Community Page!\n\n" +
+    "Welcome to the Community Page!\n\n" +
     "Share your product reviews.\n\n" +
-    "IMPORTANT: Scroll till the end."
+    "⚠️ PLEASE SCROLL TO THE END."
   );
+
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+  if (product) {
+    const textarea = document.getElementById("captionInput");
+
+    // ✅ PLACEHOLDER FIX
+    textarea.placeholder = `Write your reviews about ${product.name}`;
+
+    const preview = document.getElementById("preview");
+    preview.src = product.image;
+    preview.style.display = "block";
+
+    // ✅ AUTO OPEN POPUP
+    document.getElementById("postModal").style.display = "flex";
+  }
 };
 
-/* SCROLL ALERT */
+/* SCROLL END */
 window.onscroll = function () {
   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
     if (!window.reachedEnd) {
       window.reachedEnd = true;
 
-      alert("Reached end. Click OK to continue.");
+      alert("You reached the end. Continue to feedback form.");
+
       window.location.href = "https://forms.gle/YOUR_FORM_LINK";
     }
   }
