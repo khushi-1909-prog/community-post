@@ -22,34 +22,81 @@ h2 {
   text-align: center;
 }
 
-.post-box, .post {
+/* FACEBOOK STYLE POST BOX */
+.post-box {
   background: #fff;
   padding: 15px;
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   margin-bottom: 20px;
 }
 
-textarea {
-  width: 100%;
-  height: 80px;
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
+.top-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-/* CLEAN BUTTON */
-button {
-  padding: 8px 18px;
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.username {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.visibility {
+  font-size: 12px;
+  color: gray;
+}
+
+textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  margin-top: 10px;
+  resize: none;
+}
+
+/* PRODUCT PREVIEW */
+.product-preview {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
+.product-preview img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+/* BUTTON */
+.post-btn {
+  padding: 8px 20px;
   background: #007bff;
   color: white;
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 14px;
   display: block;
   margin: 10px auto 0;
+}
+
+/* POSTS */
+.post {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
 }
 
 .post img {
@@ -76,25 +123,6 @@ button {
 
 .comment-box input {
   width: 70%;
-  padding: 5px;
-}
-
-/* POPUP */
-.modal {
-  position: fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background: rgba(0,0,0,0.5);
-  display:none;
-  justify-content:center;
-  align-items:center;
-}
-
-.modal-content {
-  background:#fff;
-  padding:20px;
-  border-radius:12px;
-  text-align:center;
 }
 </style>
 </head>
@@ -105,67 +133,48 @@ button {
 
 <h2>Community Posts</h2>
 
+<!-- 🔥 FACEBOOK STYLE POST BOX -->
 <div class="post-box">
-  <textarea id="captionInput" placeholder="Write your review..."></textarea>
 
-  <!-- ONLY PRODUCT PREVIEW -->
-  <img id="preview" style="display:none; width:100%; border-radius:10px; margin-top:10px;">
+  <div class="top-row">
+    <img src="https://i.pravatar.cc/40" class="avatar">
+    <div class="user-info">
+      <div class="username">@you</div>
+      <div class="visibility">🌍 Public</div>
+    </div>
+  </div>
 
-  <button onclick="createPost()">Post</button>
+  <textarea id="captionInput" placeholder="What's on your mind?"></textarea>
+
+  <div id="productPreview" class="product-preview" style="display:none;">
+    <img id="previewImg">
+    <p id="productName"></p>
+  </div>
+
+  <button class="post-btn" onclick="createPost()">Post</button>
 </div>
 
 <div id="postsContainer"></div>
 
 </div>
 
-<!-- POPUP -->
-<div class="modal" id="successModal">
-  <div class="modal-content">
-    <h3>✅ Your review is posted!</h3>
-    <button onclick="goToForm()">OK</button>
-  </div>
-</div>
-
 <script>
 
-/* ✅ 4 DEFAULT POSTS ONLY */
+/* ✅ 4 DEFAULT POSTS */
 const defaultPosts = [
-  {
-    username: "khushi",
-    caption: "Loving this new outfit 😍",
-    image: "https://via.placeholder.com/500",
-    likes: 2,
-    comments: []
-  },
-  {
-    username: "fashiongirl",
-    caption: "Summer vibes ☀️",
-    image: "https://via.placeholder.com/500",
-    likes: 5,
-    comments: []
-  },
-  {
-    username: "stylequeen",
-    caption: "This bag is totally worth it 💼✨",
-    image: "https://via.placeholder.com/500",
-    likes: 3,
-    comments: []
-  },
-  {
-    username: "trendsetter",
-    caption: "Minimal & classy look 🔥",
-    image: "https://via.placeholder.com/500",
-    likes: 4,
-    comments: []
-  }
+  {username:"khushi", caption:"Loving this new outfit 😍", image:"https://via.placeholder.com/500", likes:2, comments:[]},
+  {username:"fashiongirl", caption:"Summer vibes ☀️", image:"https://via.placeholder.com/500", likes:5, comments:[]},
+  {username:"stylequeen", caption:"This bag is amazing 💼✨", image:"https://via.placeholder.com/500", likes:3, comments:[]},
+  {username:"trendsetter", caption:"Minimal & classy 🔥", image:"https://via.placeholder.com/500", likes:4, comments:[]}
 ];
 
-/* LOAD POSTS */
+/* LOAD POSTS (USER POSTS FIRST) */
 function loadPosts() {
   const container = document.getElementById("postsContainer");
   container.innerHTML = "";
 
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
+
   let allPosts = [...userPosts, ...defaultPosts];
 
   allPosts.forEach((postData, index) => {
@@ -186,7 +195,7 @@ function loadPosts() {
         ${index < userPosts.length ? `<span onclick="deletePost(${index})">🗑️ Delete</span>` : ""}
       </div>
 
-      <div class="comments">${commentsHTML}</div>
+      <div>${commentsHTML}</div>
 
       <div class="comment-box">
         <input type="text" placeholder="Add comment">
@@ -201,24 +210,24 @@ function loadPosts() {
 /* CREATE POST */
 function createPost() {
   const caption = document.getElementById("captionInput").value.trim();
-  const preview = document.getElementById("preview");
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
 
-  if (!caption && preview.style.display !== "block") {
+  if (!caption && !product) {
     alert("Please write something!");
     return;
   }
 
-  if (preview.style.display === "block") {
-    savePost(caption, preview.src);
+  if (product) {
+    savePost(caption || `Reviewing: ${product.name} ✨`, product.image);
     localStorage.removeItem("selectedProduct");
   } else {
     savePost(caption, null);
   }
 
   document.getElementById("captionInput").value = "";
-  preview.style.display = "none";
+  document.getElementById("productPreview").style.display = "none";
 
-  alert("✅ Your review has been posted successfully!");
+  alert("✅ Your review has been posted!");
 }
 
 /* SAVE POST */
@@ -242,10 +251,10 @@ function likePost(index) {
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
 
   if (index < userPosts.length) {
-    userPosts[index - defaultPosts.length].likes++;
+    userPosts[index].likes++;
     localStorage.setItem("posts", JSON.stringify(userPosts));
   } else {
-    defaultPosts[index].likes++;
+    defaultPosts[index - userPosts.length].likes++;
   }
 
   loadPosts();
@@ -254,9 +263,7 @@ function likePost(index) {
 /* DELETE */
 function deletePost(index) {
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
-
- userPosts.splice(index, 1);
-
+  userPosts.splice(index, 1);
   localStorage.setItem("posts", JSON.stringify(userPosts));
   loadPosts();
 }
@@ -264,7 +271,7 @@ function deletePost(index) {
 /* COMMENTS */
 function toggleComments(el) {
   const box = el.closest('.post').querySelector('.comment-box');
-  box.style.display = box.style.display === "none" ? "block" : "block";
+  box.style.display = box.style.display === "none" ? "block" : "none";
 }
 
 function addComment(index, btn) {
@@ -274,48 +281,45 @@ function addComment(index, btn) {
 
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
 
-   if (index < userPosts.length) {
-    userPosts[index - defaultPosts.length].comments.push("@you: " + text);
+  if (index < userPosts.length) {
+    userPosts[index].comments.push("@you: " + text);
     localStorage.setItem("posts", JSON.stringify(userPosts));
   } else {
-    defaultPosts[index].comments.push("@you: " + text);
+    defaultPosts[index - userPosts.length].comments.push("@you: " + text);
   }
 
   loadPosts();
 }
 
-/* ✅ PAGE LOAD ALERT */
+/* PAGE LOAD */
 window.onload = function () {
   loadPosts();
 
   alert(
     "Welcome to the Community Page!\n\n" +
-    "Here you can share your reviews about the products you purchased.\n\n" +
-    "⚠️ IMPORTANT: PLEASE SCROLL TO THE END OF THE PAGE."
+    "Share your reviews about purchased products.\n\n" +
+    "⚠️ PLEASE SCROLL TO THE END."
   );
 
-  // product auto-fill
   const product = JSON.parse(localStorage.getItem("selectedProduct"));
 
   if (product) {
     document.getElementById("captionInput").value =
       `Reviewing: ${product.name} ✨`;
 
-    const preview = document.getElementById("preview");
-    preview.src = product.image;
-    preview.style.display = "block";
+    document.getElementById("productPreview").style.display = "block";
+    document.getElementById("previewImg").src = product.image;
+    document.getElementById("productName").innerText = product.name;
   }
 };
 
-/* ✅ SCROLL END DETECTION */
+/* SCROLL END */
 window.onscroll = function () {
   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
-
-    // prevent multiple alerts
     if (!window.reachedEnd) {
       window.reachedEnd = true;
 
-      alert("You have reached the end.\n\nClick OK to continue to the feedback form.");
+      alert("You reached the end. Click OK to continue.");
 
       window.location.href = "https://forms.gle/YOUR_FORM_LINK";
     }
@@ -323,5 +327,6 @@ window.onscroll = function () {
 };
 
 </script>
+
 </body>
 </html>
