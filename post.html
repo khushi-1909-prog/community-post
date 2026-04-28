@@ -13,8 +13,8 @@ body {
 }
 
 .container {
-  width: 90%;
-  max-width: 600px;
+  width: 85%;
+  max-width: 520px; /* ✅ smaller post width */
   margin: 20px auto;
 }
 
@@ -22,81 +22,24 @@ h2 {
   text-align: center;
 }
 
-/* FACEBOOK STYLE POST BOX */
-.post-box {
-  background: #fff;
-  padding: 15px;
-  border-radius: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
-}
-
-.top-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-}
-
-.user-info {
-  flex: 1;
-}
-
-.username {
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.visibility {
-  font-size: 12px;
-  color: gray;
-}
-
-textarea {
-  width: 100%;
-  border: none;
-  outline: none;
-  font-size: 16px;
-  margin-top: 10px;
-  resize: none;
-}
-
-/* PRODUCT PREVIEW */
-.product-preview {
-  background: #f9f9f9;
-  padding: 10px;
-  border-radius: 12px;
-  margin-top: 10px;
-}
-
-.product-preview img {
-  width: 100%;
-  border-radius: 10px;
-}
-
-/* BUTTON */
-.post-btn {
-  padding: 8px 20px;
+/* CREATE POST BUTTON */
+.create-btn {
+  display: block;
+  margin: 15px auto;
+  padding: 10px 20px;
   background: #007bff;
   color: white;
+  border-radius: 25px;
   border: none;
-  border-radius: 20px;
   cursor: pointer;
-  display: block;
-  margin: 10px auto 0;
 }
 
 /* POSTS */
 .post {
   background: #fff;
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 20px;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 15px;
 }
 
 .post img {
@@ -107,22 +50,67 @@ textarea {
 
 .actions {
   display: flex;
-  gap: 15px;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 13px;
 }
 
 .actions span {
   cursor: pointer;
-  font-size: 14px;
 }
 
 .comment-box {
   display: none;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .comment-box input {
-  width: 70%;
+  width: 65%;
+}
+
+/* 🔥 MODAL (POPUP POST BOX) */
+.modal {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-content {
+  background:#fff;
+  width:90%;
+  max-width:400px;
+  padding:15px;
+  border-radius:12px;
+}
+
+.modal-header {
+  display:flex;
+  justify-content:space-between;
+  font-weight:bold;
+}
+
+textarea {
+  width:100%;
+  border:none;
+  outline:none;
+  font-size:16px;
+  margin-top:10px;
+}
+
+.post-btn {
+  margin-top:10px;
+  padding:8px 15px;
+  background:#007bff;
+  color:#fff;
+  border:none;
+  border-radius:20px;
+  cursor:pointer;
+  display:block;
+  margin-left:auto;
 }
 </style>
 </head>
@@ -133,48 +121,47 @@ textarea {
 
 <h2>Community Posts</h2>
 
-<!-- 🔥 FACEBOOK STYLE POST BOX -->
-<div class="post-box">
-
-  <div class="top-row">
-    <img src="https://i.pravatar.cc/40" class="avatar">
-    <div class="user-info">
-      <div class="username">@you</div>
-      <div class="visibility">🌍 Public</div>
-    </div>
-  </div>
-
-  <textarea id="captionInput" placeholder="What's on your mind?"></textarea>
-
-  <div id="productPreview" class="product-preview" style="display:none;">
-    <img id="previewImg">
-    <p id="productName"></p>
-  </div>
-
-  <button class="post-btn" onclick="createPost()">Post</button>
-</div>
+<!-- OPEN MODAL BUTTON -->
+<button class="create-btn" onclick="openModal()">Create Post</button>
 
 <div id="postsContainer"></div>
 
 </div>
 
+<!-- 🔥 POST MODAL -->
+<div class="modal" id="postModal">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <span>Create Post</span>
+      <span onclick="closeModal()" style="cursor:pointer;">✖</span>
+    </div>
+
+    <textarea id="captionInput">
+What are your reviews about this product?
+    </textarea>
+
+    <button class="post-btn" onclick="createPost()">Post</button>
+
+  </div>
+</div>
+
 <script>
 
-/* ✅ 4 DEFAULT POSTS */
+/* DEFAULT POSTS */
 const defaultPosts = [
-  {username:"khushi", caption:"Loving this new outfit 😍", image:"https://via.placeholder.com/500", likes:2, comments:[]},
+  {username:"khushi", caption:"Loved this outfit 😍", image:"https://via.placeholder.com/500", likes:2, comments:[]},
   {username:"fashiongirl", caption:"Summer vibes ☀️", image:"https://via.placeholder.com/500", likes:5, comments:[]},
-  {username:"stylequeen", caption:"This bag is amazing 💼✨", image:"https://via.placeholder.com/500", likes:3, comments:[]},
-  {username:"trendsetter", caption:"Minimal & classy 🔥", image:"https://via.placeholder.com/500", likes:4, comments:[]}
+  {username:"stylequeen", caption:"Totally worth it 💼✨", image:"https://via.placeholder.com/500", likes:3, comments:[]},
+  {username:"trendsetter", caption:"Minimal look 🔥", image:"https://via.placeholder.com/500", likes:4, comments:[]}
 ];
 
-/* LOAD POSTS (USER POSTS FIRST) */
+/* LOAD POSTS */
 function loadPosts() {
   const container = document.getElementById("postsContainer");
   container.innerHTML = "";
 
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
-
   let allPosts = [...userPosts, ...defaultPosts];
 
   allPosts.forEach((postData, index) => {
@@ -207,37 +194,41 @@ function loadPosts() {
   });
 }
 
+/* MODAL CONTROL */
+function openModal() {
+  document.getElementById("postModal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("postModal").style.display = "none";
+}
+
 /* CREATE POST */
 function createPost() {
   const caption = document.getElementById("captionInput").value.trim();
-  const product = JSON.parse(localStorage.getItem("selectedProduct"));
 
-  if (!caption && !product) {
-    alert("Please write something!");
+  if (!caption) {
+    alert("Write something!");
     return;
   }
 
-  if (product) {
-    savePost(caption || `Reviewing: ${product.name} ✨`, product.image);
-    localStorage.removeItem("selectedProduct");
-  } else {
-    savePost(caption, null);
-  }
+  savePost(caption);
 
-  document.getElementById("captionInput").value = "";
-  document.getElementById("productPreview").style.display = "none";
+  document.getElementById("captionInput").value =
+    "What are your reviews about this product?";
+
+  closeModal();
 
   alert("✅ Your review has been posted!");
 }
 
-/* SAVE POST */
-function savePost(caption, image) {
+/* SAVE */
+function savePost(caption) {
   let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
   posts.unshift({
     username: "@you",
     caption: caption,
-    image: image,
     likes: 0,
     comments: []
   });
@@ -291,7 +282,7 @@ function addComment(index, btn) {
   loadPosts();
 }
 
-/* PAGE LOAD */
+/* PAGE LOAD ALERT */
 window.onload = function () {
   loadPosts();
 
@@ -300,17 +291,6 @@ window.onload = function () {
     "Share your reviews about purchased products.\n\n" +
     "⚠️ PLEASE SCROLL TO THE END."
   );
-
-  const product = JSON.parse(localStorage.getItem("selectedProduct"));
-
-  if (product) {
-    document.getElementById("captionInput").value =
-      `Reviewing: ${product.name} ✨`;
-
-    document.getElementById("productPreview").style.display = "block";
-    document.getElementById("previewImg").src = product.image;
-    document.getElementById("productName").innerText = product.name;
-  }
 };
 
 /* SCROLL END */
@@ -319,7 +299,7 @@ window.onscroll = function () {
     if (!window.reachedEnd) {
       window.reachedEnd = true;
 
-      alert("You reached the end. Click OK to continue.");
+      alert("Click OK to continue to the feedback form.");
 
       window.location.href = "https://forms.gle/YOUR_FORM_LINK";
     }
