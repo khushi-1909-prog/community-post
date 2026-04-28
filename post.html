@@ -51,7 +51,18 @@ h2 {
   cursor: pointer;
 }
 
-/* MODAL (COMMON FOR ALL POPUPS) */
+/* COMMENT BOX */
+.comment-box {
+  display: none;
+  margin-top: 8px;
+}
+
+.comment-box input {
+  width: 70%;
+  padding: 4px;
+}
+
+/* MODAL (COMMON) */
 .modal {
   position: fixed;
   top: 0;
@@ -69,12 +80,20 @@ h2 {
   background: #fff;
   padding: 20px;
   border-radius: 12px;
-  width: 85%;
+  width: 90%;
   max-width: 350px;
   text-align: center;
 }
 
-/* INPUTS */
+/* POST MODAL IMAGE FIX */
+#postModal img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  margin-top: 10px;
+}
+
+/* INPUT */
 textarea {
   width: 100%;
   height: 80px;
@@ -102,7 +121,7 @@ button {
   <div id="postsContainer"></div>
 </div>
 
-<!-- ✅ CREATE POST MODAL -->
+<!-- ✅ POST MODAL -->
 <div class="modal" id="postModal">
   <div class="modal-box">
     <h3>Create Post</h3>
@@ -118,10 +137,10 @@ button {
     <h3>Welcome to the Community Page!</h3>
     <p>
       Share your experience about the product you purchased.
-      You can edit the default text and image provided.
+      You can edit the default text and image.
     </p>
     <p><b>⚠️ Please scroll to the end.</b></p>
-    <button onclick="closePopup()">OK</button>
+    <button onclick="closeWelcome()">OK</button>
   </div>
 </div>
 
@@ -144,8 +163,11 @@ function loadPosts() {
   let allPosts = [...userPosts, ...defaultPosts];
 
   allPosts.forEach((postData, index) => {
+
     const post = document.createElement("div");
     post.className = "post";
+
+    let commentsHTML = postData.comments.map(c => `<div>${c}</div>`).join("");
 
     post.innerHTML = `
       <b>${postData.username}</b>
@@ -154,7 +176,15 @@ function loadPosts() {
 
       <div class="actions">
         <span onclick="likePost(${index})">❤️ ${postData.likes}</span>
+        <span onclick="toggleComments(this)">💬</span>
         ${index < userPosts.length ? `<span onclick="deletePost(${index})">🗑️</span>` : ""}
+      </div>
+
+      <div class="comments">${commentsHTML}</div>
+
+      <div class="comment-box">
+        <input type="text">
+        <button onclick="addComment(${index}, this)">Post</button>
       </div>
     `;
 
@@ -182,6 +212,7 @@ function createPost() {
   });
 
   localStorage.setItem("posts", JSON.stringify(posts));
+
   document.getElementById("postModal").style.display = "none";
 
   loadPosts();
@@ -209,20 +240,34 @@ function deletePost(index) {
   loadPosts();
 }
 
-/* CLOSE POPUP */
-function closePopup() {
-  document.getElementById("welcomePopup").style.display = "none";
+/* COMMENTS */
+function toggleComments(el) {
+  const box = el.closest('.post').querySelector('.comment-box');
+  box.style.display = box.style.display === "none" ? "block" : "none";
 }
 
-/* PAGE LOAD */
-window.onload = function () {
-  loadPosts();
+function addComment(index, btn) {
+  const input = btn.previousElementSibling;
+  const text = input.value.trim();
+  if (!text) return;
 
-  // ✅ SHOW WELCOME POPUP ON LOAD
-  setTimeout(() => {
-    document.getElementById("welcomePopup").style.display = "flex";
-  }, 300);
-   const product = JSON.parse(localStorage.getItem("selectedProduct"));
+  let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
+
+  if (index < userPosts.length) {
+    userPosts[index].comments.push("@you: " + text);
+    localStorage.setItem("posts", JSON.stringify(userPosts));
+  } else {
+    defaultPosts[index - userPosts.length].comments.push("@you: " + text);
+  }
+
+  loadPosts();
+}
+
+/* CLOSE WELCOME + OPEN POST MODAL */
+function closeWelcome() {
+  document.getElementById("welcomePopup").style.display = "none";
+
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
 
   if (product) {
     const textarea = document.getElementById("captionInput");
@@ -232,9 +277,18 @@ window.onload = function () {
     preview.src = product.image;
     preview.style.display = "block";
 
-    // open post modal AFTER welcome closes (optional better UX)
     document.getElementById("postModal").style.display = "flex";
   }
+}
+
+/* PAGE LOAD */
+window.onload = function () {
+  loadPosts();
+
+  // show welcome popup
+  setTimeout(() => {
+    document.getElementById("welcomePopup").style.display = "flex";
+  }, 300);
 };
 
 /* SCROLL END POPUP */
