@@ -140,13 +140,14 @@ button {
 </div>
 
 <!-- ✅ CUSTOM ALERT POPUP -->
-<div class="custom-alert" id="welcomePopup">
-  <div class="custom-box">
-    <p><b>Welcome to the Community Page!</b></p>
-    <p>Share your product reviews.</p>
-    <p><b>⚠️ PLEASE SCROLL TO THE END.</b></p>
-    <button onclick="closePopup()">OK</button>
-  </div>
+<div class="popup-content">
+  <h3>Welcome to the Community Page!</h3>
+  <p>
+    Welcome to the community page, here you can share your experience about the product you purchased.
+    We have added a default text and image for you to post, you can edit it based on your experience.
+  </p>
+  <p><b>⚠️ PLEASE SCROLL TO THE END.</b></p>
+  <button onclick="closeWelcome()">OK</button>
 </div>
 
 <script>
@@ -290,8 +291,8 @@ window.onload = function () {
 
   // ✅ show popup AFTER page loads
   setTimeout(() => {
-    document.getElementById("welcomePopup").style.display = "flex";
-  }, 300);
+  document.getElementById("welcomePopup").style.display = "flex";
+}, 800);
 
   const product = JSON.parse(localStorage.getItem("selectedProduct"));
 
