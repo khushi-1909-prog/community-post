@@ -133,12 +133,11 @@ button {
 <!-- WELCOME POPUP -->
 <div class="modal" id="welcomePopup">
   <div class="modal-box">
-    <h3>Welcome to the Community Page!</h3>
+    <h3>Welcome to the community page!</h3>
     <p>
-      Share your experience about the product you purchased.
-      You can edit the default text and image.
+      Here you can share your product/brand experience, interact with peers posts through like and comment
     </p>
-    <p><b>⚠️ Please scroll to the end.</b></p>
+    <p><b>To kickstart your experience, we have just added a default image about the product you purchased, which you can post</b></p>
     <button onclick="closeWelcome()">OK</button>
   </div>
 </div>
@@ -299,7 +298,7 @@ window.onscroll = function () {
 
       document.getElementById("welcomePopup").innerHTML = `
         <div class="modal-box">
-          <p><b>You reached the end 🎉</b></p>
+          <p><b> You have reached the end!</b></p>
           <button onclick="window.location.href='https://forms.gle/YOUR_FORM_LINK'">Continue</button>
         </div>
       `;
