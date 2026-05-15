@@ -13,6 +13,25 @@ body {
   margin: 0;
 }
 
+/* SCROLLBAR */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ececec;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #007bff;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0056b3;
+}
+
 .container {
   width: 90%;
   max-width: 500px;
@@ -31,6 +50,39 @@ h2 {
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   margin-bottom: 15px;
   font-size: 14px;
+}
+
+/* USER POST HIGHLIGHT */
+.user-post {
+  border: 2px solid #4caf50;
+  background: #f1fff3;
+  box-shadow: 0 0 14px rgba(76, 175, 80, 0.25);
+  position: relative;
+  animation: freshPost 0.5s ease;
+}
+
+.user-post::before {
+  content: "NEW POST";
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  background: #4caf50;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+@keyframes freshPost {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .post img {
@@ -66,8 +118,10 @@ h2 {
 /* MODAL */
 .modal {
   position: fixed;
-  top:0; left:0;
-  width:100%; height:100%;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
   background: rgba(0,0,0,0.5);
   display:none;
   justify-content:center;
@@ -136,14 +190,20 @@ button {
 <div class="modal" id="welcomePopup">
   <div class="modal-box">
     <h3>Welcome to the community page!</h3>
+
     <p>
-      Here you can share your product/brand experience, interact with peers posts through like and comment
+      Here you can share your product/brand experience,
+      interact with peers posts through like and comment
     </p>
+
     <p>
       <b>
-        To kickstart your experience, we have just added a default image about the product you purchased, which you can post
+        To kickstart your experience, we have just added a
+        default image about the product you purchased,
+        which you can post
       </b>
     </p>
+
     <button onclick="closeWelcome()">OK</button>
   </div>
 </div>
@@ -152,46 +212,98 @@ button {
 
 /* DEFAULT POSTS */
 const defaultPosts = [
-  {username:"khushi",caption:"Loving the bag 😍",image:"new images/product3.jpg",likes:2,comments:[]},
-  {username:"fashiongirl",caption:"Spacious And easy to carry",image:"new images/product7.jpg",likes:5,comments:[]},
-  {username:"stylequeen",caption:"Worth it 💼✨",image:"new images/product2.jpg",likes:3,comments:[]},
-  {username:"trendsetter",caption:"Minimal & classy 🔥",image:"new images/product4.png",likes:4,comments:[]}
+  {
+    username:"khushi",
+    caption:"Loving the bag 😍",
+    image:"new images/product3.jpg",
+    likes:2,
+    comments:[]
+  },
+
+  {
+    username:"fashiongirl",
+    caption:"Spacious And easy to carry",
+    image:"new images/product7.jpg",
+    likes:5,
+    comments:[]
+  },
+
+  {
+    username:"stylequeen",
+    caption:"Worth it 💼✨",
+    image:"new images/product2.jpg",
+    likes:3,
+    comments:[]
+  },
+
+  {
+    username:"trendsetter",
+    caption:"Minimal & classy 🔥",
+    image:"new images/product4.png",
+    likes:4,
+    comments:[]
+  }
 ];
 
 /* LOAD POSTS */
 function loadPosts() {
 
   const container = document.getElementById("postsContainer");
+
   container.innerHTML = "";
 
-  let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
+  let userPosts =
+    JSON.parse(localStorage.getItem("posts")) || [];
+
   let allPosts = [...userPosts, ...defaultPosts];
 
   allPosts.forEach((postData, index) => {
 
     const post = document.createElement("div");
-    post.className = "post";
 
-    let commentsHTML = postData.comments.map(c => `<div>${c}</div>`).join("");
+    post.className =
+      index < userPosts.length
+      ? "post user-post"
+      : "post";
+
+    let commentsHTML =
+      postData.comments.map(c => `<div>${c}</div>`).join("");
 
     post.innerHTML = `
       <b>${postData.username}</b>
+
       <div>${postData.caption}</div>
 
       ${postData.image ? `<img src="${postData.image}">` : ""}
 
       <div class="actions">
-        <span onclick="likePost(${index})">❤️ ${postData.likes}</span>
-        <span onclick="toggleComments(this)">💬</span>
 
-        ${index < userPosts.length ? `<span onclick="deletePost(${index})">🗑️</span>` : ""}
+        <span onclick="likePost(${index})">
+          ❤️ ${postData.likes}
+        </span>
+
+        <span onclick="toggleComments(this)">
+          💬
+        </span>
+
+        ${
+          index < userPosts.length
+          ? `<span onclick="deletePost(${index})">🗑️</span>`
+          : ""
+        }
+
       </div>
 
-      <div class="comments">${commentsHTML}</div>
+      <div class="comments">
+        ${commentsHTML}
+      </div>
 
       <div class="comment-box">
         <input type="text">
-        <button onclick="addComment(${index}, this)">Post</button>
+
+        <button onclick="addComment(${index}, this)">
+          Post
+        </button>
       </div>
     `;
 
@@ -204,19 +316,27 @@ function loadPosts() {
 /* CREATE POST */
 function createPost() {
 
-  const caption = document.getElementById("captionInput").value.trim();
-  const preview = document.getElementById("preview");
+  const caption =
+    document.getElementById("captionInput").value.trim();
+
+  const preview =
+    document.getElementById("preview");
 
   if (!caption && preview.style.display !== "block") {
     return;
   }
 
-  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+  let posts =
+    JSON.parse(localStorage.getItem("posts")) || [];
 
   posts.unshift({
     username: "@you",
     caption,
-    image: preview.style.display === "block" ? preview.src : null,
+    image:
+      preview.style.display === "block"
+      ? preview.src
+      : null,
+
     likes: 0,
     comments: []
   });
@@ -230,17 +350,22 @@ function createPost() {
   /* SUCCESS POPUP AFTER POST */
   document.getElementById("welcomePopup").innerHTML = `
     <div class="modal-box">
+
       <h3>✅ Post Uploaded Successfully</h3>
 
       <p>
-       You have successfully posted
+        You have successfully posted
       </p>
 
       <p>
-        Now, you can check out what peers are saying by scrolling through their posts.
+        Now, you can check out what peers are saying
+        by scrolling through their posts.
       </p>
 
-      <button onclick="closePostPopup()">OK</button>
+      <button onclick="closePostPopup()">
+        OK
+      </button>
+
     </div>
   `;
 
@@ -250,13 +375,16 @@ function createPost() {
 
 /* CLOSE SUCCESS POPUP */
 function closePostPopup() {
+
   document.getElementById("welcomePopup").style.display = "none";
+
 }
 
 /* LIKE */
 function likePost(index) {
 
-  let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
+  let userPosts =
+    JSON.parse(localStorage.getItem("posts")) || [];
 
   if (index < userPosts.length) {
 
@@ -277,7 +405,8 @@ function likePost(index) {
 /* DELETE */
 function deletePost(index) {
 
-  let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
+  let userPosts =
+    JSON.parse(localStorage.getItem("posts")) || [];
 
   userPosts.splice(index, 1);
 
@@ -290,10 +419,13 @@ function deletePost(index) {
 /* COMMENTS */
 function toggleComments(el) {
 
-  const box = el.closest('.post').querySelector('.comment-box');
+  const box =
+    el.closest('.post').querySelector('.comment-box');
 
   box.style.display =
-    box.style.display === "none" ? "block" : "none";
+    box.style.display === "none"
+    ? "block"
+    : "none";
 
 }
 
@@ -305,7 +437,8 @@ function addComment(index, btn) {
 
   if (!text) return;
 
-  let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
+  let userPosts =
+    JSON.parse(localStorage.getItem("posts")) || [];
 
   if (index < userPosts.length) {
 
@@ -315,7 +448,8 @@ function addComment(index, btn) {
 
   } else {
 
-    defaultPosts[index - userPosts.length].comments.push("@you: " + text);
+    defaultPosts[index - userPosts.length]
+      .comments.push("@you: " + text);
 
   }
 
@@ -328,15 +462,18 @@ function closeWelcome() {
 
   document.getElementById("welcomePopup").style.display = "none";
 
-  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+  const product =
+    JSON.parse(localStorage.getItem("selectedProduct"));
 
   if (product) {
 
-    const textarea = document.getElementById("captionInput");
+    const textarea =
+      document.getElementById("captionInput");
 
     textarea.placeholder = "Write your reviews here";
 
-    const preview = document.getElementById("preview");
+    const preview =
+      document.getElementById("preview");
 
     preview.src = product.image;
 
@@ -364,7 +501,10 @@ window.onload = function () {
 /* SCROLL END POPUP */
 window.onscroll = function () {
 
-  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
+  if (
+    (window.innerHeight + window.scrollY)
+    >= document.body.offsetHeight - 5
+  ) {
 
     if (!window.reachedEnd) {
 
@@ -373,7 +513,9 @@ window.onscroll = function () {
       document.getElementById("welcomePopup").innerHTML = `
         <div class="modal-box">
 
-          <p><b>You have reached the end!</b></p>
+          <p>
+            <b>You have reached the end!</b>
+          </p>
 
           <button onclick="window.location.href='https://forms.gle/YOUR_FORM_LINK'">
             Continue
