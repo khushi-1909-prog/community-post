@@ -6,6 +6,7 @@
 <title>Community Page</title>
 
 <style>
+
 body {
   font-family: Arial;
   background: #f5f5f5;
@@ -110,6 +111,7 @@ button {
   color:#fff;
   cursor:pointer;
 }
+
 </style>
 </head>
 
@@ -137,7 +139,11 @@ button {
     <p>
       Here you can share your product/brand experience, interact with peers posts through like and comment
     </p>
-    <p><b>To kickstart your experience, we have just added a default image about the product you purchased, which you can post</b></p>
+    <p>
+      <b>
+        To kickstart your experience, we have just added a default image about the product you purchased, which you can post
+      </b>
+    </p>
     <button onclick="closeWelcome()">OK</button>
   </div>
 </div>
@@ -154,6 +160,7 @@ const defaultPosts = [
 
 /* LOAD POSTS */
 function loadPosts() {
+
   const container = document.getElementById("postsContainer");
   container.innerHTML = "";
 
@@ -170,11 +177,13 @@ function loadPosts() {
     post.innerHTML = `
       <b>${postData.username}</b>
       <div>${postData.caption}</div>
+
       ${postData.image ? `<img src="${postData.image}">` : ""}
 
       <div class="actions">
         <span onclick="likePost(${index})">❤️ ${postData.likes}</span>
         <span onclick="toggleComments(this)">💬</span>
+
         ${index < userPosts.length ? `<span onclick="deletePost(${index})">🗑️</span>` : ""}
       </div>
 
@@ -187,11 +196,14 @@ function loadPosts() {
     `;
 
     container.appendChild(post);
+
   });
+
 }
 
 /* CREATE POST */
 function createPost() {
+
   const caption = document.getElementById("captionInput").value.trim();
   const preview = document.getElementById("preview");
 
@@ -214,98 +226,168 @@ function createPost() {
   document.getElementById("postModal").style.display = "none";
 
   loadPosts();
+
+  /* SUCCESS POPUP AFTER POST */
+  document.getElementById("welcomePopup").innerHTML = `
+    <div class="modal-box">
+      <h3>✅ Post Uploaded Successfully</h3>
+
+      <p>
+        Your post has been shared with the community.
+      </p>
+
+      <p>
+        You can now scroll and explore other posts.
+      </p>
+
+      <button onclick="closePostPopup()">OK</button>
+    </div>
+  `;
+
+  document.getElementById("welcomePopup").style.display = "flex";
+
+}
+
+/* CLOSE SUCCESS POPUP */
+function closePostPopup() {
+  document.getElementById("welcomePopup").style.display = "none";
 }
 
 /* LIKE */
 function likePost(index) {
+
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
 
   if (index < userPosts.length) {
+
     userPosts[index].likes++;
+
     localStorage.setItem("posts", JSON.stringify(userPosts));
+
   } else {
+
     defaultPosts[index - userPosts.length].likes++;
+
   }
 
   loadPosts();
+
 }
 
 /* DELETE */
 function deletePost(index) {
+
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
+
   userPosts.splice(index, 1);
+
   localStorage.setItem("posts", JSON.stringify(userPosts));
+
   loadPosts();
+
 }
 
 /* COMMENTS */
 function toggleComments(el) {
+
   const box = el.closest('.post').querySelector('.comment-box');
-  box.style.display = box.style.display === "none" ? "block" : "none";
+
+  box.style.display =
+    box.style.display === "none" ? "block" : "none";
+
 }
 
 function addComment(index, btn) {
+
   const input = btn.previousElementSibling;
+
   const text = input.value.trim();
+
   if (!text) return;
 
   let userPosts = JSON.parse(localStorage.getItem("posts")) || [];
 
   if (index < userPosts.length) {
+
     userPosts[index].comments.push("@you: " + text);
+
     localStorage.setItem("posts", JSON.stringify(userPosts));
+
   } else {
+
     defaultPosts[index - userPosts.length].comments.push("@you: " + text);
+
   }
 
   loadPosts();
+
 }
 
 /* CLOSE WELCOME + OPEN POST MODAL */
 function closeWelcome() {
+
   document.getElementById("welcomePopup").style.display = "none";
 
   const product = JSON.parse(localStorage.getItem("selectedProduct"));
 
   if (product) {
+
     const textarea = document.getElementById("captionInput");
 
-    // ✅ ONLY CHANGE: STATIC PLACEHOLDER
     textarea.placeholder = "Write your reviews here";
 
     const preview = document.getElementById("preview");
+
     preview.src = product.image;
+
     preview.style.display = "block";
 
     document.getElementById("postModal").style.display = "flex";
+
   }
+
 }
 
 /* PAGE LOAD */
 window.onload = function () {
+
   loadPosts();
 
   setTimeout(() => {
+
     document.getElementById("welcomePopup").style.display = "flex";
+
   }, 300);
+
 };
 
 /* SCROLL END POPUP */
 window.onscroll = function () {
+
   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
+
     if (!window.reachedEnd) {
+
       window.reachedEnd = true;
 
       document.getElementById("welcomePopup").innerHTML = `
         <div class="modal-box">
-          <p><b> You have reached the end!</b></p>
-          <button onclick="window.location.href='https://forms.gle/YOUR_FORM_LINK'">Continue</button>
+
+          <p><b>You have reached the end!</b></p>
+
+          <button onclick="window.location.href='https://forms.gle/YOUR_FORM_LINK'">
+            Continue
+          </button>
+
         </div>
       `;
 
       document.getElementById("welcomePopup").style.display = "flex";
+
     }
+
   }
+
 };
 
 </script>
